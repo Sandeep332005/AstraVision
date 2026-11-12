@@ -5,6 +5,7 @@
 </p>
 
 <p align="center">
+  <a href="https://sandeep332005.github.io/AstraVision/"><img src="https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-65A9FF.svg?style=flat&logo=github" alt="Live Demo"></a>
   <a href="https://pytorch.org/"><img src="https://img.shields.io/badge/PyTorch-2.x%2B-EE4C2C.svg?style=flat&logo=pytorch" alt="PyTorch 2.x"></a>
   <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.8%2B-3776AB.svg?style=flat&logo=python" alt="Python 3.8+"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-green.svg" alt="License Apache 2.0"></a>
@@ -12,6 +13,8 @@
   <a href="#multi-agent-empirical-module-health-monitor"><img src="https://img.shields.io/badge/Module%20Audit-10%2F10%20Healthy-success.svg" alt="Audit Healthy"></a>
   <a href="#mathematical-formulations"><img src="https://img.shields.io/badge/Algorithm-Wang%20et%20al.%202004-blue.svg" alt="Wang et al."></a>
 </p>
+
+> 🌐 **Interactive Live Web App:** [https://sandeep332005.github.io/AstraVision/](https://sandeep332005.github.io/AstraVision/) — *Test SSIM, MS-SSIM, structural heatmaps, error distributions, and restoration directly in your browser with zero installation.*
 
 ---
 
