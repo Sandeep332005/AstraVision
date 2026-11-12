@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-SSIM LAB Launcher
+AstraVision Launcher
 One-command entry point to run unit tests or launch the interactive research studio.
 """
 
@@ -16,13 +16,13 @@ if BASE_DIR not in sys.path:
 
 def run_tests():
     """Runs the formal pytest suite."""
-    print("🔬 Running SSIM LAB mathematical verification test suite...")
+    print("🔬 Running AstraVision mathematical verification test suite...")
     import pytest
     exit_code = pytest.main(["-v", os.path.join(BASE_DIR, "tests")])
     sys.exit(exit_code)
 
 def main():
-    parser = argparse.ArgumentParser(description="SSIM LAB — Intelligent Image Quality Platform")
+    parser = argparse.ArgumentParser(description="AstraVision — Intelligent Image Quality Platform")
     parser.add_argument("--port", type=int, default=8000, help="Port to bind the server (default: 8000)")
     parser.add_argument("--test", action="store_true", help="Run the test suite and exit")
     parser.add_argument("--no-browser", action="store_true", help="Do not open web browser automatically")
