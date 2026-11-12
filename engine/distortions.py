@@ -1,24 +1,32 @@
 """
 Parametric Distortion Laboratory
-Simulates real-world optical, transmission, and sensor degradation:
-Gaussian Noise, Impulse Salt-and-Pepper, Gaussian Blur, Motion Blur, JPEG Artifacts, and Luminance Shift.
+Simulates real-world optical, sensor, compression, and transmission degradation:
+Gaussian Noise, Salt-and-Pepper, Gaussian Blur, Motion Blur, Genuine JPEG Compression, Contrast/Brightness, and Resizing.
 """
 
+from typing import Optional
+import io
 import math
 import torch
 import torch.nn.functional as F
+import numpy as np
+from PIL import Image
 
-def add_gaussian_noise(tensor: torch.Tensor, sigma: float = 0.1) -> torch.Tensor:
-    """Adds zero-mean Gaussian noise with standard deviation sigma."""
+def add_gaussian_noise(tensor: torch.Tensor, sigma: float = 0.1, seed: Optional[int] = None) -> torch.Tensor:
+    """Adds zero-mean Gaussian noise with standard deviation sigma and optional seed."""
     if sigma <= 0:
         return tensor.clone()
+    if seed is not None:
+        torch.manual_seed(seed)
     noise = torch.randn_like(tensor) * sigma
     return torch.clamp(tensor + noise, 0.0, 1.0)
 
-def add_salt_and_pepper_noise(tensor: torch.Tensor, prob: float = 0.02) -> torch.Tensor:
-    """Adds impulsive salt (1.0) and pepper (0.0) noise."""
+def add_salt_and_pepper_noise(tensor: torch.Tensor, prob: float = 0.02, seed: Optional[int] = None) -> torch.Tensor:
+    """Adds impulsive salt (1.0) and pepper (0.0) noise with optional seed."""
     if prob <= 0:
         return tensor.clone()
+    if seed is not None:
+        torch.manual_seed(seed)
     out = tensor.clone()
     rand = torch.rand_like(tensor)
     out[rand < (prob / 2.0)] = 0.0
@@ -42,8 +50,8 @@ def apply_gaussian_blur(tensor: torch.Tensor, kernel_size: int = 15, sigma: floa
     pad = kernel_size // 2
     return F.conv2d(tensor, kernel, padding=pad, groups=channels)
 
-def apply_motion_blur(tensor: torch.Tensor, size: int = 15, angle: float = 0.0) -> torch.Tensor:
-    """Applies linear directional motion blur."""
+def apply_motion_blur(tensor: torch.Tensor, size: int = 15, angle: float = 45.0) -> torch.Tensor:
+    """Applies linear directional motion blur along specified angle in degrees."""
     if size <= 1:
         return tensor.clone()
     kernel = torch.zeros((size, size), device=tensor.device, dtype=torch.float32)
@@ -68,26 +76,48 @@ def apply_motion_blur(tensor: torch.Tensor, size: int = 15, angle: float = 0.0) 
     pad = size // 2
     return F.conv2d(tensor, kernel2d, padding=pad, groups=channels)
 
-def apply_jpeg_artifacts(tensor: torch.Tensor, block_size: int = 8, quant_step: float = 0.15) -> torch.Tensor:
-    """Simulates 8x8 block-based DCT compression quantization artifacts."""
-    if block_size <= 1:
+def apply_real_jpeg_compression(tensor: torch.Tensor, quality: int = 15) -> torch.Tensor:
+    """
+    Applies genuine JPEG Discrete Cosine Transform (DCT) quantization using standard JPEG encoder.
+    quality: JPEG Quality factor [1, 95] (lower = more severe blocking and compression artifacts).
+    """
+    quality = max(1, min(95, int(quality)))
+    if tensor.dim() == 4:
+        squeeze_batch = True
+        img_t = tensor.squeeze(0)
+    else:
+        squeeze_batch = False
+        img_t = tensor
+
+    # Convert to PIL Image
+    np_img = (img_t.permute(1, 2, 0).detach().cpu().numpy() * 255.0).clip(0, 255).astype(np.uint8)
+    pil_img = Image.fromarray(np_img)
+
+    # Compress into in-memory JPEG buffer
+    buffer = io.BytesIO()
+    pil_img.save(buffer, format="JPEG", quality=quality)
+    buffer.seek(0)
+
+    # Read back compressed image
+    decompressed = Image.open(buffer).convert("RGB")
+    np_decomp = np.array(decompressed, dtype=np.float32) / 255.0
+    out_tensor = torch.from_numpy(np_decomp).permute(2, 0, 1).to(tensor.device)
+
+    if squeeze_batch:
+        out_tensor = out_tensor.unsqueeze(0)
+    return out_tensor
+
+def apply_resizing_distortion(tensor: torch.Tensor, scale_factor: float = 0.25) -> torch.Tensor:
+    """Downsamples and upsamples image to evaluate decimation & interpolation artifacts."""
+    if scale_factor >= 1.0:
         return tensor.clone()
-    B, C, H, W = tensor.shape
-    # Pad to multiple of block_size
-    pad_h = (block_size - (H % block_size)) % block_size
-    pad_w = (block_size - (W % block_size)) % block_size
-    padded = F.pad(tensor, (0, pad_w, 0, pad_h), mode="replicate")
+    _, _, H, W = tensor.shape
+    small_h = max(4, int(H * scale_factor))
+    small_w = max(4, int(W * scale_factor))
 
-    # Downsample average and quantize
-    down = F.avg_pool2d(padded, kernel_size=block_size, stride=block_size)
-    if quant_step > 0:
-        down = torch.round(down / quant_step) * quant_step
-
-    # Upsample block structure
-    up = F.interpolate(down, size=(padded.shape[-2], padded.shape[-1]), mode="nearest")
-    # Blend blocky edges
-    blended = 0.4 * padded + 0.6 * up
-    return torch.clamp(blended[:, :, :H, :W], 0.0, 1.0)
+    down = F.interpolate(tensor, size=(small_h, small_w), mode="bilinear", align_corners=False)
+    up = F.interpolate(down, size=(H, W), mode="bilinear", align_corners=False)
+    return up
 
 def adjust_brightness_contrast(tensor: torch.Tensor, brightness: float = 0.0, contrast: float = 1.0) -> torch.Tensor:
     """Parametric brightness offset and contrast scaling."""

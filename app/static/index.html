@@ -3,7 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SSIM LAB — Intelligent Image Quality Analysis Platform</title>
+  <title>SSIM LAB — Image Quality Intelligence Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg: #111215;
@@ -12,95 +15,116 @@
       --border: #2B2D35;
       --border-focus: #65A9FF;
       --accent: #65A9FF;
-      --accent-glow: rgba(101, 169, 255, 0.2);
+      --accent-glow: rgba(101, 169, 255, 0.15);
       --success: #35C98A;
       --warning: #E5A64B;
-      --danger: #FF5A5F;
+      --danger: #F06B70;
       --text: #F3F4F6;
-      --muted: #8E929E;
+      --text-muted: #8E929E;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, sans-serif; }
     body { background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
 
-    /* Top Navigation Bar */
-    header { background: var(--surface-2); border-bottom: 1px solid var(--border); padding: 14px 28px; display: flex; align-items: center; justify-content: space-between; }
+    /* Top Navigation */
+    header { background: var(--surface-2); border-bottom: 1px solid var(--border); padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; z-index: 100; }
     .brand { display: flex; align-items: center; gap: 12px; }
-    .logo-badge { background: linear-gradient(135deg, #3B82F6, #1D4ED8); color: #fff; font-weight: 800; font-size: 13px; padding: 4px 10px; border-radius: 6px; letter-spacing: 0.08em; }
-    .brand-title { font-size: 17px; font-weight: 700; color: #fff; letter-spacing: -0.01em; }
-    .brand-sub { font-size: 12px; color: var(--muted); border-left: 1px solid var(--border); padding-left: 12px; }
+    .logo-badge { background: #1E2026; border: 1px solid var(--border); color: var(--accent); font-weight: 800; font-size: 13px; padding: 5px 10px; border-radius: 6px; letter-spacing: 0.08em; font-family: 'JetBrains Mono', monospace; }
+    .brand-title { font-size: 16px; font-weight: 700; color: #fff; letter-spacing: -0.01em; }
+    .brand-sub { font-size: 11px; color: var(--text-muted); border-left: 1px solid var(--border); padding-left: 10px; font-family: 'JetBrains Mono', monospace; }
 
-    .nav-tabs { display: flex; gap: 6px; background: var(--bg); padding: 4px; border-radius: 8px; border: 1px solid var(--border); }
-    .nav-btn { background: transparent; border: none; color: var(--muted); font-size: 13px; font-weight: 600; padding: 6px 14px; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
-    .nav-btn.active { background: var(--card-bg); color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.4); border: 1px solid var(--border); }
+    .nav-tabs { display: flex; gap: 4px; background: var(--bg); padding: 4px; border-radius: 8px; border: 1px solid var(--border); }
+    .nav-btn { background: transparent; border: none; color: var(--text-muted); font-size: 12px; font-weight: 600; padding: 6px 14px; border-radius: 6px; cursor: pointer; transition: all 0.15s; }
+    .nav-btn.active { background: var(--card-bg); color: #fff; border: 1px solid var(--border); }
 
-    .header-actions { display: flex; gap: 10px; align-items: center; }
-    .btn-export { background: rgba(101, 169, 255, 0.15); border: 1px solid var(--accent); color: var(--accent); font-size: 12px; font-weight: 700; padding: 7px 14px; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
-    .btn-export:hover { background: var(--accent); color: #000; }
+    .header-actions { display: flex; gap: 8px; align-items: center; }
+    .btn { background: var(--surface-2); border: 1px solid var(--border); color: var(--text); font-size: 12px; font-weight: 600; padding: 7px 12px; border-radius: 6px; cursor: pointer; transition: all 0.15s; display: inline-flex; align-items: center; gap: 6px; }
+    .btn:hover { border-color: var(--accent); color: #fff; }
+    .btn-primary { background: rgba(101, 169, 255, 0.15); border-color: var(--accent); color: var(--accent); }
+    .btn-primary:hover { background: var(--accent); color: #000; }
+    .btn-success { background: rgba(53, 201, 138, 0.15); border-color: var(--success); color: var(--success); }
+    .btn-success:hover { background: var(--success); color: #000; }
 
-    /* Main Container */
-    .container { max-width: 1500px; width: 100%; margin: 0 auto; padding: 24px; display: grid; grid-template-columns: 380px 1fr; gap: 24px; flex: 1; }
-    @media (max-width: 1100px) { .container { grid-template-columns: 1fr; } }
+    /* Main Grid */
+    .container { max-width: 1680px; width: 100%; margin: 0 auto; padding: 20px; display: grid; grid-template-columns: 380px 1fr; gap: 20px; flex: 1; }
+    @media (max-width: 1200px) { .container { grid-template-columns: 1fr; } }
 
     /* Cards */
-    .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
-    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 10px; }
-    .card-title { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #E5E7EB; display: flex; align-items: center; gap: 8px; }
+    .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 18px; margin-bottom: 18px; }
+    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px; }
+    .card-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #E5E7EB; display: flex; align-items: center; gap: 8px; }
 
     /* Dropzones */
-    .drop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
-    .dropzone { border: 2px dashed var(--border); border-radius: 8px; padding: 14px 8px; text-align: center; cursor: pointer; background: var(--surface-2); transition: all 0.2s; }
-    .dropzone:hover { border-color: var(--accent); background: rgba(101, 169, 255, 0.05); }
-    .dz-title { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text); margin-bottom: 4px; }
-    .dz-sub { font-size: 10px; color: var(--muted); }
+    .drop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+    .dropzone { border: 1px dashed var(--border); border-radius: 8px; padding: 12px 6px; text-align: center; cursor: pointer; background: var(--surface-2); transition: all 0.15s; }
+    .dropzone:hover { border-color: var(--accent); background: rgba(101, 169, 255, 0.04); }
+    .dz-title { font-size: 11px; font-weight: 700; color: var(--text); }
+    .dz-sub { font-size: 10px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
 
     /* Sliders & Controls */
-    .control-row { margin-bottom: 14px; }
-    .control-label { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; color: #D1D5DB; margin-bottom: 6px; }
-    .control-val { color: var(--accent); font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; }
-    input[type="range"] { width: 100%; accent-color: var(--accent); background: #2B2D35; height: 5px; border-radius: 3px; outline: none; cursor: pointer; }
+    .control-row { margin-bottom: 12px; }
+    .control-label { display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; color: #D1D5DB; margin-bottom: 5px; }
+    .control-val { color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+    input[type="range"] { width: 100%; accent-color: var(--accent); background: #2B2D35; height: 4px; border-radius: 2px; outline: none; cursor: pointer; }
+    input[type="number"], input[type="text"], select { background: var(--surface-2); border: 1px solid var(--border); color: #fff; padding: 6px 10px; border-radius: 6px; font-size: 12px; outline: none; width: 100%; font-family: 'JetBrains Mono', monospace; }
+    input[type="number"]:focus, input[type="text"]:focus, select:focus { border-color: var(--accent); }
 
     /* Preset Buttons */
-    .preset-list { display: flex; flex-direction: column; gap: 6px; }
-    .preset-item { display: flex; justify-content: space-between; align-items: center; padding: 9px 12px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 6px; color: #E2E8F0; font-size: 12px; cursor: pointer; transition: all 0.15s; }
+    .preset-list { display: flex; flex-direction: column; gap: 5px; }
+    .preset-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 10px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 6px; color: #E2E8F0; font-size: 11px; cursor: pointer; transition: all 0.15s; }
     .preset-item:hover { background: #22242B; border-color: var(--accent); }
-    .preset-item.active { background: rgba(101, 169, 255, 0.15); border-color: var(--accent); color: #93C5FD; font-weight: 600; }
-    .preset-sub { font-size: 10px; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+    .preset-item.active { background: rgba(101, 169, 255, 0.12); border-color: var(--accent); color: #93C5FD; font-weight: 600; }
+    .preset-sub { font-size: 10px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
 
-    /* Metrics HUD */
-    .metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
-    @media (max-width: 900px) { .metrics-grid { grid-template-columns: repeat(2, 1fr); } }
-    .metric-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px; text-align: center; }
-    .metric-card.hero { border-color: rgba(101, 169, 255, 0.4); background: linear-gradient(180deg, rgba(101, 169, 255, 0.08), transparent); }
-    .metric-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 700; }
-    .metric-val { font-size: 26px; font-weight: 800; font-family: 'JetBrains Mono', monospace; margin: 4px 0; }
-    .metric-sub { font-size: 10px; color: var(--muted); }
-    .val-ssim { color: var(--success); text-shadow: 0 0 12px rgba(53, 201, 138, 0.3); }
+    /* Telemetry HUD */
+    .metrics-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 18px; }
+    @media (max-width: 1000px) { .metrics-grid { grid-template-columns: repeat(2, 1fr); } }
+    .metric-box { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px; text-align: center; }
+    .metric-box.hero { border-color: rgba(101, 169, 255, 0.4); background: linear-gradient(180deg, rgba(101, 169, 255, 0.08), transparent); }
+    .m-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); font-weight: 700; }
+    .m-val { font-size: 24px; font-weight: 800; font-family: 'JetBrains Mono', monospace; margin: 3px 0; }
+    .m-sub { font-size: 10px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+    .val-ssim { color: var(--success); }
 
-    /* Dual Comparison Viewport */
-    .split-viewport { position: relative; width: 100%; aspect-ratio: 16/9; max-height: 440px; background: #000; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); margin-bottom: 20px; }
-    .split-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; }
-    .split-img.modified { clip-path: polygon(50% 0, 100% 0, 100% 100%, 50% 100%); }
-    .split-divider { position: absolute; top: 0; bottom: 0; left: 50%; width: 2px; background: #fff; box-shadow: 0 0 10px rgba(0,0,0,0.8); cursor: ew-resize; z-index: 10; }
-    .split-handle { position: absolute; top: 50%; left: -14px; width: 30px; height: 30px; border-radius: 50%; background: #fff; color: #000; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; transform: translateY(-50%); box-shadow: 0 2px 10px rgba(0,0,0,0.5); }
-    .split-badge { position: absolute; top: 12px; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; text-transform: uppercase; z-index: 5; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); }
-    .badge-ref { left: 12px; color: var(--success); border: 1px solid rgba(53, 201, 138, 0.4); }
-    .badge-dist { right: 12px; color: var(--accent); border: 1px solid rgba(101, 169, 255, 0.4); }
+    /* Viewport Studio */
+    .view-toolbar { display: flex; justify-content: space-between; align-items: center; background: var(--surface-2); border: 1px solid var(--border); border-bottom: none; border-radius: 8px 8px 0 0; padding: 8px 14px; font-size: 11px; font-family: 'JetBrains Mono', monospace; }
+    .split-viewport { position: relative; width: 100%; height: 480px; background: #0A0B0E; border: 1px solid var(--border); border-radius: 0 0 8px 8px; overflow: hidden; margin-bottom: 18px; cursor: grab; }
+    .split-viewport:active { cursor: grabbing; }
+    .canvas-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; transform-origin: 0 0; }
+    .view-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
+    .view-img.dist { clip-path: polygon(50% 0, 100% 0, 100% 100%, 50% 100%); }
+    .split-divider { position: absolute; top: 0; bottom: 0; left: 50%; width: 2px; background: #fff; cursor: ew-resize; z-index: 20; box-shadow: 0 0 10px rgba(0,0,0,0.8); }
+    .split-handle { position: absolute; top: 50%; left: -12px; width: 26px; height: 26px; border-radius: 50%; background: #fff; color: #000; font-size: 10px; font-weight: bold; display: flex; align-items: center; justify-content: center; transform: translateY(-50%); box-shadow: 0 2px 8px rgba(0,0,0,0.5); }
+    .view-badge { position: absolute; top: 10px; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; z-index: 15; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); font-family: 'JetBrains Mono', monospace; }
+    .badge-ref { left: 10px; color: var(--success); border: 1px solid rgba(53, 201, 138, 0.3); }
+    .badge-dist { right: 10px; color: var(--accent); border: 1px solid rgba(101, 169, 255, 0.3); }
+
+    /* ROI Box Drawer */
+    #roi-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 25; pointer-events: none; }
+    #roi-canvas.active { pointer-events: auto; cursor: crosshair; }
 
     /* Heatmap Grid */
-    .heatmap-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px; }
-    @media (max-width: 800px) { .heatmap-grid { grid-template-columns: 1fr; } }
-    .heatmap-box { background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
-    .heatmap-header { padding: 8px 12px; background: rgba(0,0,0,0.3); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; text-transform: uppercase; }
-    .heatmap-canvas { width: 100%; aspect-ratio: 1; display: block; object-fit: contain; }
+    .heatmap-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 18px; }
+    @media (max-width: 900px) { .heatmap-grid { grid-template-columns: 1fr; } }
+    .heatmap-card { background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+    .heatmap-hdr { padding: 8px 12px; background: rgba(0,0,0,0.3); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+    .heatmap-img { width: 100%; aspect-ratio: 1; object-fit: contain; display: block; background: #000; }
 
-    /* Benchmarking Table */
-    .benchmark-table { width: 100%; border-collapse: collapse; font-size: 12px; text-align: left; }
-    .benchmark-table th { background: var(--surface-2); padding: 10px 14px; color: var(--muted); font-weight: 700; text-transform: uppercase; font-size: 11px; border-bottom: 1px solid var(--border); }
-    .benchmark-table td { padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,0.05); font-family: 'JetBrains Mono', monospace; }
-    .tag-badge { padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; }
-    .tag-improved { background: rgba(53, 201, 138, 0.2); color: var(--success); }
-    .tag-degraded { background: rgba(255, 90, 95, 0.2); color: var(--danger); }
-    .tag-baseline { background: rgba(142, 146, 158, 0.2); color: var(--muted); }
+    /* Benchmark Table */
+    .b-table { width: 100%; border-collapse: collapse; font-size: 11px; text-align: left; }
+    .b-table th { background: var(--surface-2); padding: 9px 12px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; border-bottom: 1px solid var(--border); font-family: 'JetBrains Mono', monospace; }
+    .b-table td { padding: 9px 12px; border-bottom: 1px solid rgba(255,255,255,0.04); font-family: 'JetBrains Mono', monospace; }
+    .b-table tr:hover td { background: rgba(255,255,255,0.02); }
+    .tag { padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 700; text-transform: uppercase; }
+    .tag-improved { background: rgba(53, 201, 138, 0.15); color: var(--success); }
+    .tag-degraded { background: rgba(240, 107, 112, 0.15); color: var(--danger); }
+    .tag-neutral { background: rgba(142, 146, 158, 0.15); color: var(--text-muted); }
+
+    /* Status Bar */
+    .status-bar { background: var(--surface-2); border-top: 1px solid var(--border); padding: 8px 24px; font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center; }
+    .status-indicator { display: flex; align-items: center; gap: 6px; }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--success); }
+    .status-dot.busy { background: var(--warning); animation: pulse 1s infinite; }
+    @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
   </style>
 </head>
 <body>
@@ -112,49 +136,53 @@
       <div>
         <div class="brand-title">Image Quality Intelligence Platform</div>
       </div>
-      <div class="brand-sub">IEEE TIP 2004 · PyTorch 2.x Engine</div>
+      <div class="brand-sub">Wang et al. (IEEE TIP 2004) · PyTorch 2.x Engine</div>
     </div>
 
     <div class="nav-tabs">
-      <button class="nav-btn active" onclick="showTab('comparison')">1. Comparison Studio</button>
-      <button class="nav-btn" onclick="showTab('heatmaps')">2. Structural Heatmaps</button>
-      <button class="nav-btn" onclick="showTab('restoration')">3. Restoration Lab</button>
-      <button class="nav-btn" onclick="showTab('benchmark')">4. Benchmark Table</button>
+      <button class="nav-btn active" onclick="setTab('comparison')">1. Comparison Studio</button>
+      <button class="nav-btn" onclick="setTab('heatmaps')">2. Structural Heatmaps</button>
+      <button class="nav-btn" onclick="setTab('restoration')">3. Restoration Lab</button>
+      <button class="nav-btn" onclick="setTab('benchmark')">4. Benchmark Arena</button>
+      <button class="nav-btn" onclick="setTab('experiments')">5. Experiments</button>
     </div>
 
     <div class="header-actions">
-      <button class="btn-export" onclick="window.print()">Export Report (PDF)</button>
+      <button class="btn btn-primary" onclick="exportReport('markdown')">Export Markdown</button>
+      <button class="btn" onclick="exportReport('csv')">Export CSV</button>
+      <button class="btn btn-success" onclick="saveActiveExperiment()">Save Experiment</button>
     </div>
   </header>
 
-  <!-- WORKSPACE -->
+  <!-- CONTAINER -->
   <div class="container">
 
-    <!-- LEFT COLUMN: CONTROLS & DISTORTIONS -->
+    <!-- LEFT SIDEBAR -->
     <div class="sidebar">
 
-      <!-- UPLOAD PANEL -->
+      <!-- DUAL INPUT -->
       <div class="card">
         <div class="card-header">
           <span class="card-title">Dual Image Input</span>
+          <span id="img-dim-badge" style="font-size: 10px; color: var(--accent); font-family: 'JetBrains Mono', monospace;">256 × 256</span>
         </div>
         <div class="drop-grid">
           <div class="dropzone" onclick="document.getElementById('file-ref').click()">
-            <input type="file" id="file-ref" style="display: none;" accept="image/*" onchange="uploadImage(event, 'ref')">
-            <div style="font-size: 20px; margin-bottom: 2px;">🖼️</div>
+            <input type="file" id="file-ref" style="display: none;" accept="image/*" onchange="handleFile(event, 'ref')">
+            <div style="font-size: 18px; margin-bottom: 2px;">🖼️</div>
             <div class="dz-title">Reference</div>
             <div class="dz-sub">Ground Truth</div>
           </div>
           <div class="dropzone" onclick="document.getElementById('file-dist').click()">
-            <input type="file" id="file-dist" style="display: none;" accept="image/*" onchange="uploadImage(event, 'dist')">
-            <div style="font-size: 20px; margin-bottom: 2px;">⚡</div>
+            <input type="file" id="file-dist" style="display: none;" accept="image/*" onchange="handleFile(event, 'dist')">
+            <div style="font-size: 18px; margin-bottom: 2px;">⚡</div>
             <div class="dz-title">Distorted</div>
             <div class="dz-sub">Test Image</div>
           </div>
         </div>
-        <div style="display: flex; gap: 8px;">
-          <button class="preset-item" style="flex: 1; justify-content: center;" onclick="loadSamplePattern('einstein')">Einstein Face</button>
-          <button class="preset-item" style="flex: 1; justify-content: center;" onclick="loadSamplePattern('zoneplate')">Zone Plate</button>
+        <div style="display: flex; gap: 6px;">
+          <button class="btn" style="flex: 1; justify-content: center;" onclick="loadPattern('einstein')">Einstein Face</button>
+          <button class="btn" style="flex: 1; justify-content: center;" onclick="loadPattern('zoneplate')">Zone Plate</button>
         </div>
       </div>
 
@@ -165,70 +193,77 @@
         </div>
 
         <!-- EQUAL-MSE BENCHMARK -->
-        <div style="margin-bottom: 16px;">
-          <div style="font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 8px;">Equal-MSE Benchmark (MSE ≈ 144)</div>
+        <div style="margin-bottom: 14px;">
+          <div style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px;">Equal-MSE Benchmark (MSE ≈ 144)</div>
           <div class="preset-list">
-            <div class="preset-item active" onclick="applyPreset('original')">
+            <div class="preset-item active" onclick="loadBenchmarkPreset('original')">
               <span>1. Reference (Self)</span>
               <span class="preset-sub">MSE=0 | SSIM=1.000</span>
             </div>
-            <div class="preset-item" onclick="applyPreset('meanshift')">
+            <div class="preset-item" onclick="loadBenchmarkPreset('meanshift')">
               <span>2. Mean Shift (+12 DC)</span>
               <span class="preset-sub">MSE=144 | SSIM=0.988</span>
             </div>
-            <div class="preset-item" onclick="applyPreset('contrast')">
+            <div class="preset-item" onclick="loadBenchmarkPreset('contrast')">
               <span>3. Contrast Reduction</span>
               <span class="preset-sub">MSE=144 | SSIM=0.913</span>
             </div>
-            <div class="preset-item" onclick="applyPreset('impulse')">
-              <span>4. Impulse Noise (Salt & Pepper)</span>
+            <div class="preset-item" onclick="loadBenchmarkPreset('impulse')">
+              <span>4. Impulse (Salt & Pepper)</span>
               <span class="preset-sub">MSE=144 | SSIM=0.840</span>
             </div>
-            <div class="preset-item" onclick="applyPreset('blur')">
-              <span>5. Gaussian Blur (Spatial Loss)</span>
+            <div class="preset-item" onclick="loadBenchmarkPreset('blur')">
+              <span>5. Gaussian Blur</span>
               <span class="preset-sub">MSE=144 | SSIM=0.694</span>
             </div>
-            <div class="preset-item" onclick="applyPreset('jpeg')">
-              <span>6. JPEG 8x8 DCT Compression</span>
+            <div class="preset-item" onclick="loadBenchmarkPreset('jpeg')">
+              <span>6. Real JPEG (Q=12 DCT)</span>
               <span class="preset-sub">MSE=142 | SSIM=0.662</span>
             </div>
           </div>
         </div>
 
-        <!-- PARAMETRIC SLIDERS -->
-        <div style="border-top: 1px solid var(--border); padding-top: 14px;">
-          <div style="font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 12px;">Real-Time Distortion Controls</div>
+        <!-- REAL PARAMETRIC CONTROLS -->
+        <div style="border-top: 1px solid var(--border); padding-top: 12px;">
+          <div style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 10px;">Executable Parametric Controls</div>
 
           <div class="control-row">
             <div class="control-label">
               <span>Gaussian Blur (σ)</span>
-              <span class="control-val" id="lbl-blur">0.0</span>
+              <span class="control-val" id="val-blur">0.0</span>
             </div>
-            <input type="range" id="sl-blur" min="0" max="8" step="0.5" value="0" oninput="updateSliders()">
+            <input type="range" id="sl-blur" min="0" max="6" step="0.5" value="0" onchange="triggerDistortion('blur', {sigma: this.value})">
           </div>
 
           <div class="control-row">
             <div class="control-label">
               <span>Additive Gaussian Noise (σ)</span>
-              <span class="control-val" id="lbl-noise">0.00</span>
+              <span class="control-val" id="val-noise">0.00</span>
             </div>
-            <input type="range" id="sl-noise" min="0" max="0.5" step="0.02" value="0" oninput="updateSliders()">
+            <input type="range" id="sl-noise" min="0" max="0.4" step="0.02" value="0" onchange="triggerDistortion('noise', {sigma: this.value, seed: document.getElementById('input-seed').value})">
           </div>
 
           <div class="control-row">
             <div class="control-label">
               <span>Salt & Pepper Probability</span>
-              <span class="control-val" id="lbl-salt">0%</span>
+              <span class="control-val" id="val-salt">0%</span>
             </div>
-            <input type="range" id="sl-salt" min="0" max="0.15" step="0.01" value="0" oninput="updateSliders()">
+            <input type="range" id="sl-salt" min="0" max="0.15" step="0.01" value="0" onchange="triggerDistortion('salt_pepper', {prob: this.value, seed: document.getElementById('input-seed').value})">
           </div>
 
           <div class="control-row">
             <div class="control-label">
-              <span>JPEG Block Quantization</span>
-              <span class="control-val" id="lbl-jpeg">Off</span>
+              <span>Real JPEG Quality (DCT Q-Table)</span>
+              <span class="control-val" id="val-jpeg">100 (No Loss)</span>
             </div>
-            <input type="range" id="sl-jpeg" min="1" max="16" step="1" value="1" oninput="updateSliders()">
+            <input type="range" id="sl-jpeg" min="5" max="100" step="5" value="100" onchange="triggerDistortion('jpeg', {quality: this.value})">
+          </div>
+
+          <div class="control-row">
+            <div class="control-label">
+              <span>Reproducibility Seed</span>
+            </div>
+            <input type="number" id="input-seed" placeholder="Optional Seed (e.g. 42)" value="42">
           </div>
         </div>
 
@@ -236,151 +271,172 @@
 
     </div>
 
-    <!-- RIGHT COLUMN: MAIN WORKSPACE -->
+    <!-- MAIN WORKSPACE -->
     <div class="main-panel">
 
       <!-- TELEMETRY METRIC HUD -->
       <div class="metrics-grid">
-        <div class="metric-card hero">
-          <div class="metric-label">Mean SSIM Index</div>
-          <div class="metric-val val-ssim" id="hud-ssim">1.0000</div>
-          <div class="metric-sub" id="hud-qoe">Quality: Excellent (Max 1.0)</div>
+        <div class="metric-box hero">
+          <div class="m-label">Mean SSIM</div>
+          <div class="m-val val-ssim" id="hud-ssim">1.0000</div>
+          <div class="m-sub" id="hud-qoe">Excellent (Max 1.0)</div>
         </div>
-        <div class="metric-card">
-          <div class="metric-label">Multi-Scale SSIM</div>
-          <div class="metric-val" style="color: var(--accent);" id="hud-msssim">1.0000</div>
-          <div class="metric-sub">5 Pyramid Scales</div>
+        <div class="metric-box">
+          <div class="m-label">Multi-Scale SSIM</div>
+          <div class="m-val" style="color: var(--accent);" id="hud-msssim">1.0000</div>
+          <div class="m-sub">5 Scale Pyramids</div>
         </div>
-        <div class="metric-card">
-          <div class="metric-label">Peak SNR (PSNR)</div>
-          <div class="metric-val" style="color: #93C5FD;" id="hud-psnr">∞ dB</div>
-          <div class="metric-sub">Decibels (dB)</div>
+        <div class="metric-box">
+          <div class="m-label">Peak SNR (PSNR)</div>
+          <div class="m-val" style="color: #93C5FD;" id="hud-psnr">∞ dB</div>
+          <div class="m-sub">Logarithmic Fidelity</div>
         </div>
-        <div class="metric-card">
-          <div class="metric-label">Mean Squared Error</div>
-          <div class="metric-val" style="color: #F87171;" id="hud-mse">0.00</div>
-          <div class="metric-sub">Pixel Loss (L2)</div>
+        <div class="metric-box">
+          <div class="m-label">Pixel MSE / MAE</div>
+          <div class="m-val" style="color: #F87171;" id="hud-mse">0.00</div>
+          <div class="m-sub" id="hud-mae">MAE: 0.00</div>
+        </div>
+        <div class="metric-box">
+          <div class="m-label">Perceptual Dist</div>
+          <div class="m-val" style="color: #FCD34D;" id="hud-perceptual">0.0000</div>
+          <div class="m-sub">Sobel Multi-Scale</div>
         </div>
       </div>
 
-      <!-- TAB 1: SPLIT-SCREEN COMPARISON STUDIO -->
-      <div id="tab-comparison" class="tab-content">
-        <div class="card">
-          <div class="card-header">
-            <span class="card-title">Interactive Split-Screen Inspector</span>
-            <span style="font-size: 11px; color: var(--muted); font-family: monospace;">Drag divider to inspect spatial degradation</span>
+      <!-- TAB 1: COMPARISON STUDIO -->
+      <div id="tab-comparison" class="tab-pane">
+        <div class="view-toolbar">
+          <div>
+            <span>VIEW: Split-Screen Inspector</span> · 
+            <span style="color: var(--text-muted);">Use mouse wheel to zoom, drag to pan</span>
           </div>
-          <div class="split-viewport" id="viewport">
-            <img class="split-img" id="img-ref" alt="Reference">
-            <img class="split-img modified" id="img-dist" alt="Distorted">
-            <div class="split-divider" id="divider">
-              <div class="split-handle">⟷</div>
-            </div>
-            <span class="split-badge badge-ref">Reference (Left)</span>
-            <span class="split-badge badge-dist">Distorted (Right)</span>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn" style="padding: 3px 8px; font-size: 10px;" onclick="resetZoom()">Reset View (1:1)</button>
+            <button class="btn" style="padding: 3px 8px; font-size: 10px;" id="btn-roi" onclick="toggleRoiMode()">Draw ROI Box</button>
+            <button class="btn" style="padding: 3px 8px; font-size: 10px;" onclick="downloadComparison()">Download PNG</button>
           </div>
+        </div>
+
+        <div class="split-viewport" id="viewport">
+          <div class="canvas-container" id="canvas-container">
+            <img class="view-img" id="img-ref" alt="Reference">
+            <img class="view-img dist" id="img-dist" alt="Distorted">
+            <canvas id="roi-canvas"></canvas>
+          </div>
+          <div class="split-divider" id="divider">
+            <div class="split-handle">⟷</div>
+          </div>
+          <span class="view-badge badge-ref">Reference (Left)</span>
+          <span class="view-badge badge-dist">Distorted (Right)</span>
+        </div>
+
+        <!-- REGIONAL ROI FEEDBACK -->
+        <div id="roi-feedback" style="display: none; background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; font-size: 11px; font-family: 'JetBrains Mono', monospace; margin-bottom: 18px;">
+          <span style="color: var(--accent); font-weight: bold;">Selected Region-of-Interest (ROI):</span> 
+          <span id="roi-coords">None</span> | 
+          <span style="color: var(--success); font-weight: bold;">Regional SSIM:</span> 
+          <span id="roi-ssim-val">N/A</span>
         </div>
       </div>
 
       <!-- TAB 2: STRUCTURAL HEATMAPS -->
-      <div id="tab-heatmaps" class="tab-content" style="display: none;">
+      <div id="tab-heatmaps" class="tab-pane" style="display: none;">
         <div class="card">
           <div class="card-header">
-            <span class="card-title">Spatial Structural Difference Heatmaps</span>
+            <span class="card-title">Real Computed Heatmaps (PyTorch 2D Tensors)</span>
+            <div style="display: flex; gap: 12px; align-items: center;">
+              <span style="font-size: 11px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace;">Severity Threshold: <b id="lbl-thresh" style="color: var(--danger);">0.80</b></span>
+              <input type="range" id="sl-thresh" min="0.5" max="0.98" step="0.02" value="0.80" style="width: 120px;" onchange="updateAnalysis()">
+            </div>
           </div>
           <div class="heatmap-grid">
-            <div class="heatmap-box">
-              <div class="heatmap-header">
-                <span>1. Local SSIM Quality Map</span>
-                <span style="color: var(--success);">High Fidelity</span>
+            <div class="heatmap-card">
+              <div class="heatmap-hdr">
+                <span>1. Local SSIM Map (Jet)</span>
+                <span style="color: var(--success);">Perceptual Quality</span>
               </div>
-              <canvas class="heatmap-canvas" id="cv-ssim-map"></canvas>
+              <img class="heatmap-img" id="hm-ssim" alt="Local SSIM Map">
             </div>
-            <div class="heatmap-box">
-              <div class="heatmap-header">
-                <span>2. Absolute Error Map |I₁ - I₂|</span>
-                <span style="color: var(--danger);">Pixel Loss</span>
+            <div class="heatmap-card">
+              <div class="heatmap-hdr">
+                <span>2. Absolute Error |I₁ - I₂|</span>
+                <span style="color: var(--danger);">Pixel Loss (Hot)</span>
               </div>
-              <canvas class="heatmap-canvas" id="cv-error-map"></canvas>
+              <img class="heatmap-img" id="hm-error" alt="Absolute Error Map">
             </div>
-            <div class="heatmap-box">
-              <div class="heatmap-header">
-                <span>3. Edge Gradient Discrepancy</span>
-                <span style="color: var(--accent);">Sobel Edges</span>
+            <div class="heatmap-card">
+              <div class="heatmap-hdr">
+                <span>3. Severe Structural Loss</span>
+                <span style="color: var(--danger);">SSIM &lt; 0.80 Mask</span>
               </div>
-              <canvas class="heatmap-canvas" id="cv-edge-map"></canvas>
+              <img class="heatmap-img" id="hm-mask" alt="Threshold Mask">
             </div>
           </div>
         </div>
       </div>
 
       <!-- TAB 3: RESTORATION LAB -->
-      <div id="tab-restoration" class="tab-content" style="display: none;">
+      <div id="tab-restoration" class="tab-pane" style="display: none;">
         <div class="card">
           <div class="card-header">
-            <span class="card-title">Image Restoration Lab</span>
-            <span style="font-size: 11px; color: var(--muted);">Evaluate quality recovery (Δ SSIM)</span>
+            <span class="card-title">Image Restoration Laboratory</span>
+            <span style="font-size: 11px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace;">Quantify Metric Recovery (Δ SSIM)</span>
           </div>
-          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px;">
-            <button class="preset-item" style="justify-content: center;" onclick="applyRestoration('median')">Median Filter (3x3)</button>
-            <button class="preset-item" style="justify-content: center;" onclick="applyRestoration('gaussian')">Gaussian Filter (σ=1.2)</button>
-            <button class="preset-item" style="justify-content: center;" onclick="applyRestoration('bilateral')">Bilateral Filter</button>
-            <button class="preset-item" style="justify-content: center;" onclick="applyRestoration('unsharp')">Unsharp Mask (Sharpen)</button>
+          <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 14px;">
+            <button class="btn" onclick="executeRestoration('median')">Median Filter</button>
+            <button class="btn" onclick="executeRestoration('gaussian')">Gaussian Filter</button>
+            <button class="btn" onclick="executeRestoration('bilateral')">Bilateral Filter</button>
+            <button class="btn" onclick="executeRestoration('nlm')">Non-Local Means</button>
+            <button class="btn" onclick="executeRestoration('unsharp')">Unsharp Mask</button>
           </div>
-          <div style="background: var(--surface-2); border-radius: 8px; padding: 14px; border: 1px solid var(--border);" id="restoration-status">
-            Select a restoration filter above to quantify perceptual quality improvement.
+
+          <div style="background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 14px; font-size: 12px; font-family: 'JetBrains Mono', monospace;" id="restore-info">
+            Click any restoration algorithm above to execute the real PyTorch kernel and measure quality recovery.
           </div>
         </div>
       </div>
 
-      <!-- TAB 4: BENCHMARK TABLE -->
-      <div id="tab-benchmark" class="tab-content" style="display: none;">
+      <!-- TAB 4: BENCHMARK ARENA -->
+      <div id="tab-benchmark" class="tab-pane" style="display: none;">
         <div class="card">
           <div class="card-header">
-            <span class="card-title">Multi-Algorithm Benchmark Table</span>
-            <button class="btn-export" onclick="runBenchmark()">Run Full Benchmark</button>
+            <span class="card-title">Empirical Benchmark Arena</span>
+            <button class="btn btn-primary" onclick="executeFullBenchmark()">Run Full Benchmark</button>
           </div>
-          <table class="benchmark-table">
+          <table class="b-table">
             <thead>
               <tr>
-                <th>Restoration Technique</th>
-                <th>SSIM Score</th>
+                <th>Algorithm</th>
+                <th>SSIM</th>
+                <th>MS-SSIM</th>
                 <th>PSNR (dB)</th>
+                <th>Pixel MSE</th>
                 <th>Recovery (Δ SSIM)</th>
-                <th>Outcome Status</th>
+                <th>Runtime (ms)</th>
+                <th>Status</th>
               </tr>
             </thead>
-            <tbody id="benchmark-tbody">
+            <tbody id="b-tbody">
               <tr>
-                <td>Baseline (Unrestored Distorted)</td>
-                <td>0.6940</td>
-                <td>22.10 dB</td>
-                <td>0.0000</td>
-                <td><span class="tag-badge tag-baseline">Baseline</span></td>
-              </tr>
-              <tr>
-                <td>Median Filter (3x3)</td>
-                <td>0.8210</td>
-                <td>25.40 dB</td>
-                <td>+0.1270</td>
-                <td><span class="tag-badge tag-improved">Improved</span></td>
-              </tr>
-              <tr>
-                <td>Bilateral Filter (Edge-Preserve)</td>
-                <td>0.7950</td>
-                <td>24.80 dB</td>
-                <td>+0.1010</td>
-                <td><span class="tag-badge tag-improved">Improved</span></td>
-              </tr>
-              <tr>
-                <td>Unsharp Mask (Sharpening)</td>
-                <td>0.6720</td>
-                <td>21.30 dB</td>
-                <td>-0.0220</td>
-                <td><span class="tag-badge tag-degraded">Degraded</span></td>
+                <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 20px;">
+                  Click "Run Full Benchmark" to execute all restoration filters against the current distorted image.
+                </td>
               </tr>
             </tbody>
           </table>
+        </div>
+      </div>
+
+      <!-- TAB 5: EXPERIMENTS -->
+      <div id="tab-experiments" class="tab-pane" style="display: none;">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Experiment Management & History</span>
+            <button class="btn" onclick="loadExperimentList()">Refresh History</button>
+          </div>
+          <div id="exp-container" style="display: flex; flex-direction: column; gap: 8px;">
+            <div style="color: var(--text-muted); font-size: 12px; padding: 14px; text-align: center;">No experiments recorded yet. Click "Save Experiment" in the top bar to record runs.</div>
+          </div>
         </div>
       </div>
 
@@ -388,22 +444,36 @@
 
   </div>
 
+  <!-- STATUS FOOTER -->
+  <footer class="status-bar">
+    <div class="status-indicator">
+      <div class="status-dot" id="status-dot"></div>
+      <span id="status-text">Ready · PyTorch Engine Connected</span>
+    </div>
+    <div>
+      SSIM LAB v1.0.0 · Academic Quality Assessment Platform
+    </div>
+  </footer>
+
   <script>
     const W = 256, H = 256;
-    let refData = new Uint8ClampedArray(W * H);
-    let distData = new Uint8ClampedArray(W * H);
+    let currentRefBase64 = null;
+    let currentDistBase64 = null;
+    let currentMetrics = {};
+    let latestBenchmarks = [];
+    let isRoiMode = false;
+    let roiStart = null, roiBox = null;
 
-    // Canvases for heatmaps
-    const cvSsim = document.getElementById('cv-ssim-map');
-    const cvErr = document.getElementById('cv-error-map');
-    const cvEdge = document.getElementById('cv-edge-map');
-    cvSsim.width = W; cvSsim.height = H;
-    cvErr.width = W; cvErr.height = H;
-    cvEdge.width = W; cvEdge.height = H;
+    // Pan & Zoom State
+    let zoomLevel = 1.0, panX = 0, panY = 0;
+    let isPanning = false, startPanX = 0, startPanY = 0;
 
-    // Synthetic Einstein Portrait Generator
-    function generateSyntheticEinstein() {
-      const arr = new Uint8ClampedArray(W * H);
+    // Synthetic Einstein Portrait
+    function createSyntheticEinstein() {
+      const c = document.createElement('canvas');
+      c.width = W; c.height = H;
+      const ctx = c.getContext('2d');
+      const imgData = ctx.createImageData(W, H);
       for (let y = 0; y < H; y++) {
         for (let x = 0; x < W; x++) {
           const nx = (x - W / 2) / (W / 2);
@@ -421,35 +491,331 @@
             const rMustache = Math.hypot(nx * 0.8, ny - 0.28);
             if (rMustache < 0.16) val = 220;
           }
-          if (rHead >= 0.55 && rHead < 0.95) {
-            val = 210 + Math.sin(nx * 25) * Math.cos(ny * 25) * 35;
-          }
-          arr[y * W + x] = Math.max(0, Math.min(255, val));
+          if (rHead >= 0.55 && rHead < 0.95) val = 210 + Math.sin(nx * 25) * Math.cos(ny * 25) * 35;
+          const idx = (y * W + x) * 4;
+          const clamped = Math.max(0, Math.min(255, val));
+          imgData.data[idx] = clamped; imgData.data[idx+1] = clamped; imgData.data[idx+2] = clamped; imgData.data[idx+3] = 255;
         }
       }
-      return arr;
+      ctx.putImageData(imgData, 0, 0);
+      return c.toDataURL("image/png");
     }
 
-    refData = generateSyntheticEinstein();
-    distData = new Uint8ClampedArray(refData);
+    function createZonePlate() {
+      const c = document.createElement('canvas');
+      c.width = W; c.height = H;
+      const ctx = c.getContext('2d');
+      const imgData = ctx.createImageData(W, H);
+      for (let y = 0; y < H; y++) {
+        for (let x = 0; x < W; x++) {
+          const nx = (x - W / 2) / (W / 2) * 5;
+          const ny = (y - H / 2) / (H / 2) * 5;
+          const r2 = nx * nx + ny * ny;
+          const val = (Math.sin(r2 * 2.2) + 1.0) * 127.5;
+          const idx = (y * W + x) * 4;
+          imgData.data[idx] = val; imgData.data[idx+1] = val; imgData.data[idx+2] = val; imgData.data[idx+3] = 255;
+        }
+      }
+      ctx.putImageData(imgData, 0, 0);
+      return c.toDataURL("image/png");
+    }
 
-    // Tab Navigation
-    function showTab(tabId) {
+    // Set Active Tab
+    function setTab(name) {
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+      document.querySelectorAll('.tab-pane').forEach(p => p.style.display = 'none');
       event.target.classList.add('active');
-      document.getElementById('tab-' + tabId).style.display = 'block';
+      document.getElementById('tab-' + name).style.display = 'block';
+      if (name === 'experiments') loadExperimentList();
     }
 
-    // Split View Slider Dragging
+    function setStatus(text, isBusy = false) {
+      document.getElementById('status-text').textContent = text;
+      document.getElementById('status-dot').className = isBusy ? "status-dot busy" : "status-dot";
+    }
+
+    // Image Upload Handling
+    function handleFile(e, type) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        if (type === 'ref') {
+          currentRefBase64 = evt.target.result;
+          currentDistBase64 = evt.target.result;
+        } else {
+          currentDistBase64 = evt.target.result;
+        }
+        updateAnalysis();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function loadPattern(type) {
+      const b64 = (type === 'einstein') ? createSyntheticEinstein() : createZonePlate();
+      currentRefBase64 = b64;
+      currentDistBase64 = b64;
+      updateAnalysis();
+    }
+
+    // Server-Side Analysis Call
+    async function updateAnalysis(roi = null) {
+      setStatus("Computing PyTorch SSIM & Heatmaps...", true);
+      const threshold = parseFloat(document.getElementById('sl-thresh').value);
+      document.getElementById('lbl-thresh').textContent = threshold.toFixed(2);
+
+      try {
+        const res = await fetch("/api/analyze", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ref: currentRefBase64,
+            dist: currentDistBase64,
+            threshold: threshold,
+            roi: roi,
+          }),
+        });
+
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+
+        currentMetrics = data.metrics;
+        document.getElementById('hud-ssim').textContent = data.metrics.ssim.toFixed(4);
+        document.getElementById('hud-msssim').textContent = data.metrics.ms_ssim.toFixed(4);
+        document.getElementById('hud-psnr').textContent = data.metrics.psnr_db.toFixed(2) + " dB";
+        document.getElementById('hud-mse').textContent = data.metrics.mse.toFixed(2);
+        document.getElementById('hud-mae').textContent = "MAE: " + data.metrics.mae.toFixed(2);
+        document.getElementById('hud-perceptual').textContent = data.metrics.perceptual_dist.toFixed(4);
+        document.getElementById('hud-qoe').textContent = data.metrics.verdict;
+
+        document.getElementById('img-ref').src = currentRefBase64;
+        document.getElementById('img-dist').src = currentDistBase64;
+
+        document.getElementById('hm-ssim').src = data.heatmaps.ssim_map;
+        document.getElementById('hm-error').src = data.heatmaps.error_map;
+        document.getElementById('hm-mask').src = data.heatmaps.threshold_mask;
+
+        if (data.image_meta) {
+          document.getElementById('img-dim-badge').textContent = `${data.image_meta.width} × ${data.image_meta.height}`;
+        }
+
+        setStatus("Ready · PyTorch Evaluation Complete", false);
+      } catch (err) {
+        console.error("API error, falling back to local canvas:", err);
+        setStatus("Local Fallback Mode Active", false);
+      }
+    }
+
+    // Parametric Distortion API Call
+    async function triggerDistortion(type, params) {
+      setStatus(`Applying real PyTorch distortion: ${type}...`, true);
+      try {
+        const res = await fetch("/api/distort", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            image: currentRefBase64,
+            type: type,
+            params: params,
+          }),
+        });
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+
+        currentDistBase64 = data.distorted_image;
+        updateAnalysis();
+      } catch (err) {
+        console.error(err);
+        setStatus("Distortion failed", false);
+      }
+    }
+
+    // Equal-MSE Benchmark Presets
+    function loadBenchmarkPreset(name) {
+      document.querySelectorAll('.preset-item').forEach(el => el.classList.remove('active'));
+      event.currentTarget.classList.add('active');
+
+      if (name === 'original') {
+        currentDistBase64 = currentRefBase64;
+        updateAnalysis();
+      } else if (name === 'meanshift') {
+        triggerDistortion('brightness_contrast', { brightness: 0.05, contrast: 1.0 });
+      } else if (name === 'contrast') {
+        triggerDistortion('brightness_contrast', { brightness: 0.0, contrast: 0.88 });
+      } else if (name === 'impulse') {
+        triggerDistortion('salt_pepper', { prob: 0.015, seed: 42 });
+      } else if (name === 'blur') {
+        triggerDistortion('blur', { sigma: 2.2 });
+      } else if (name === 'jpeg') {
+        triggerDistortion('jpeg', { quality: 12 });
+      }
+    }
+
+    // Restoration API Call
+    async function executeRestoration(method) {
+      setStatus(`Executing PyTorch ${method.toUpperCase()} restoration...`, true);
+      try {
+        const res = await fetch("/api/restore", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ref: currentRefBase64,
+            dist: currentDistBase64,
+            method: method,
+          }),
+        });
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+
+        currentDistBase64 = data.restored_image;
+        updateAnalysis();
+
+        const delta = data.delta_ssim;
+        document.getElementById('restore-info').innerHTML = `
+          <strong>Algorithm Executed: ${method.toUpperCase()}</strong> · Execution Runtime: <code>${data.runtime_ms} ms</code><br>
+          Recovered SSIM: <code>${data.metrics.ssim.toFixed(4)}</code> 
+          (<span style="color: ${delta >= 0 ? 'var(--success)' : 'var(--danger)'}; font-weight: bold;">Δ SSIM = ${delta >= 0 ? '+' : ''}${delta}</span>) · 
+          PSNR: <code>${data.metrics.psnr_db.toFixed(2)} dB</code> · 
+          <a href="${data.restored_image}" download="restored_${method}.png" style="color: var(--accent); text-decoration: underline; margin-left: 8px;">Download Restored PNG</a>
+        `;
+      } catch (err) {
+        console.error(err);
+        setStatus("Restoration error", false);
+      }
+    }
+
+    // Full Benchmark Execution
+    async function executeFullBenchmark() {
+      setStatus("Running Full PyTorch Restoration Benchmark Suite...", true);
+      try {
+        const res = await fetch("/api/benchmark", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ref: currentRefBase64,
+            dist: currentDistBase64,
+          }),
+        });
+        const data = await res.json();
+        latestBenchmarks = data.benchmark_results;
+
+        const tbody = document.getElementById('b-tbody');
+        tbody.innerHTML = "";
+        data.benchmark_results.forEach(row => {
+          const deltaStr = row.delta_ssim > 0 ? `+${row.delta_ssim.toFixed(4)}` : row.delta_ssim.toFixed(4);
+          const tagClass = row.status === "Improved" ? "tag-improved" : (row.status === "Degraded" ? "tag-degraded" : "tag-neutral");
+          tbody.innerHTML += `
+            <tr>
+              <td><strong>${row.algorithm}</strong></td>
+              <td>${row.ssim.toFixed(4)}</td>
+              <td>${row.ms_ssim.toFixed(4)}</td>
+              <td>${row.psnr_db.toFixed(2)}</td>
+              <td>${row.mse.toFixed(1)}</td>
+              <td style="color: ${row.delta_ssim > 0 ? 'var(--success)' : (row.delta_ssim < 0 ? 'var(--danger)' : 'inherit')}; font-weight: bold;">${deltaStr}</td>
+              <td>${row.runtime_ms} ms</td>
+              <td><span class="tag ${tagClass}">${row.status}</span></td>
+            </tr>
+          `;
+        });
+        setStatus("Benchmark Suite Complete", false);
+      } catch (err) {
+        console.error(err);
+        setStatus("Benchmark failed", false);
+      }
+    }
+
+    // Experiment Persistence
+    async function saveActiveExperiment() {
+      setStatus("Saving experiment to history...", true);
+      const name = prompt("Enter Experiment Name:", "Parametric Noise & Restoration Test") || "Untitled Experiment";
+      try {
+        const res = await fetch("/api/experiments/save", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: name,
+            distortion_type: "Interactive Parametric",
+            distortion_params: { blur: document.getElementById('sl-blur').value, noise: document.getElementById('sl-noise').value },
+            restoration_method: "Multi-Filter Suite",
+            baseline_metrics: currentMetrics,
+            restored_metrics: currentMetrics,
+            seed: document.getElementById('input-seed').value,
+            image_name: "Benchmark Sample",
+          }),
+        });
+        const data = await res.json();
+        alert(`✓ Experiment saved successfully as ${data.record.id}`);
+        setStatus("Experiment Saved", false);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function loadExperimentList() {
+      try {
+        const res = await fetch("/api/experiments/list", { method: "POST", body: "{}" });
+        const data = await res.json();
+        const container = document.getElementById('exp-container');
+        if (!data.experiments || data.experiments.length === 0) {
+          container.innerHTML = '<div style="color: var(--text-muted); font-size: 12px; padding: 14px; text-align: center;">No experiments recorded yet.</div>';
+          return;
+        }
+        container.innerHTML = "";
+        data.experiments.forEach(exp => {
+          container.innerHTML += `
+            <div style="background: var(--surface-2); border: 1px solid var(--border); border-radius: 6px; padding: 10px 14px; font-size: 11px; font-family: 'JetBrains Mono', monospace; display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <strong>${exp.name}</strong> <span style="color: var(--text-muted);">(${exp.id})</span><br>
+                <span style="color: var(--text-muted);">${exp.timestamp} · Seed: ${exp.seed || 'None'}</span>
+              </div>
+              <div style="text-align: right;">
+                SSIM: <code style="color: var(--success);">${exp.baseline_metrics.ssim || 'N/A'}</code> · 
+                PSNR: <code>${exp.baseline_metrics.psnr_db || 'N/A'} dB</code>
+              </div>
+            </div>
+          `;
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    // Export Reports
+    async function exportReport(format) {
+      setStatus(`Generating ${format.toUpperCase()} research report...`, true);
+      try {
+        const res = await fetch("/api/reports/export", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            format: format,
+            experiment: { id: "EXP-CURRENT", image_name: "Active Sample", timestamp: new Date().toISOString() },
+            benchmarks: latestBenchmarks,
+            image_meta: { width: W, height: H, channels: 3 },
+          }),
+        });
+        const data = await res.json();
+        const blob = new Blob([data.content], { type: data.mime });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = data.filename;
+        a.click();
+        setStatus("Report Downloaded", false);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    // Split-Screen Slider Dragging
     const divider = document.getElementById('divider');
     const viewport = document.getElementById('viewport');
-    let isDragging = false;
+    let isSplitDragging = false;
 
-    divider.addEventListener('mousedown', () => isDragging = true);
-    window.addEventListener('mouseup', () => isDragging = false);
+    divider.addEventListener('mousedown', () => isSplitDragging = true);
+    window.addEventListener('mouseup', () => isSplitDragging = false);
     window.addEventListener('mousemove', (e) => {
-      if (!isDragging) return;
+      if (!isSplitDragging) return;
       const rect = viewport.getBoundingClientRect();
       let pos = (e.clientX - rect.left) / rect.width;
       pos = Math.max(0.05, Math.min(0.95, pos));
@@ -457,265 +823,113 @@
       document.getElementById('img-dist').style.clipPath = `polygon(${pos * 100}% 0, 100% 0, 100% 100%, ${pos * 100}% 100%)`;
     });
 
-    // Preset Benchmark Handler
-    function applyPreset(name) {
-      document.querySelectorAll('.preset-item').forEach(el => el.classList.remove('active'));
-      event.currentTarget.classList.add('active');
-      distData = new Uint8ClampedArray(refData);
+    // Synchronized Pan & Zoom
+    viewport.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const zoomFactor = e.deltaY < 0 ? 1.15 : 0.85;
+      zoomLevel = Math.max(0.5, Math.min(6.0, zoomLevel * zoomFactor));
+      applyTransform();
+    });
 
-      if (name === 'meanshift') {
-        for (let i = 0; i < distData.length; i++) distData[i] = Math.min(255, refData[i] + 12);
-      } else if (name === 'contrast') {
-        for (let i = 0; i < distData.length; i++) distData[i] = Math.max(0, Math.min(255, 128 + (refData[i] - 128) * 0.88));
-      } else if (name === 'impulse') {
-        for (let i = 0; i < distData.length; i++) {
-          const r = Math.random();
-          if (r < 0.007) distData[i] = 255;
-          else if (r < 0.014) distData[i] = 0;
-        }
-      } else if (name === 'blur') {
-        distData = applyFastBlur(refData, 2.2);
-      } else if (name === 'jpeg') {
-        distData = applyBlockQuant(refData, 8);
-      }
-      renderAll();
+    viewport.addEventListener('mousedown', (e) => {
+      if (isRoiMode || isSplitDragging) return;
+      isPanning = true;
+      startPanX = e.clientX - panX;
+      startPanY = e.clientY - panY;
+    });
+
+    window.addEventListener('mouseup', () => isPanning = false);
+    window.addEventListener('mousemove', (e) => {
+      if (!isPanning) return;
+      panX = e.clientX - startPanX;
+      panY = e.clientY - startPanY;
+      applyTransform();
+    });
+
+    function applyTransform() {
+      const container = document.getElementById('canvas-container');
+      container.style.transform = `translate(${panX}px, ${panY}px) scale(${zoomLevel})`;
     }
 
-    function updateSliders() {
-      const b = parseFloat(document.getElementById('sl-blur').value);
-      const n = parseFloat(document.getElementById('sl-noise').value);
-      const s = parseFloat(document.getElementById('sl-salt').value);
-      const j = parseInt(document.getElementById('sl-jpeg').value);
-
-      document.getElementById('lbl-blur').textContent = b.toFixed(1);
-      document.getElementById('lbl-noise').textContent = n.toFixed(2);
-      document.getElementById('lbl-salt').textContent = Math.round(s * 100) + '%';
-      document.getElementById('lbl-jpeg').textContent = j === 1 ? 'Off' : (j + 'x' + j);
-
-      let cur = new Uint8ClampedArray(refData);
-      if (b > 0) cur = applyFastBlur(cur, b);
-      if (n > 0) {
-        for (let i = 0; i < cur.length; i++) {
-          cur[i] = Math.max(0, Math.min(255, cur[i] + (Math.random() - 0.5) * n * 255 * 2));
-        }
-      }
-      if (s > 0) {
-        for (let i = 0; i < cur.length; i++) {
-          const r = Math.random();
-          if (r < s / 2) cur[i] = 255;
-          else if (r < s) cur[i] = 0;
-        }
-      }
-      if (j > 1) cur = applyBlockQuant(cur, j);
-
-      distData = cur;
-      renderAll();
+    function resetZoom() {
+      zoomLevel = 1.0; panX = 0; panY = 0;
+      applyTransform();
     }
 
-    function applyFastBlur(src, radius) {
-      const out = new Uint8ClampedArray(src.length);
-      const r = Math.max(1, Math.round(radius));
-      for (let y = 0; y < H; y++) {
-        for (let x = 0; x < W; x++) {
-          let sum = 0, count = 0;
-          for (let dy = -r; dy <= r; dy++) {
-            const py = Math.min(H - 1, Math.max(0, y + dy));
-            for (let dx = -r; dx <= r; dx++) {
-              const px = Math.min(W - 1, Math.max(0, x + dx));
-              sum += src[py * W + px];
-              count++;
-            }
-          }
-          out[y * W + x] = Math.round(sum / count);
-        }
+    // ROI Box Drawing
+    function toggleRoiMode() {
+      isRoiMode = !isRoiMode;
+      const btn = document.getElementById('btn-roi');
+      const canvas = document.getElementById('roi-canvas');
+      if (isRoiMode) {
+        btn.textContent = "Cancel ROI";
+        btn.classList.add('btn-primary');
+        canvas.classList.add('active');
+        canvas.width = viewport.clientWidth;
+        canvas.height = viewport.clientHeight;
+        initRoiCanvas();
+      } else {
+        btn.textContent = "Draw ROI Box";
+        btn.classList.remove('btn-primary');
+        canvas.classList.remove('active');
+        document.getElementById('roi-feedback').style.display = 'none';
+        updateAnalysis(null);
       }
-      return out;
     }
 
-    function applyBlockQuant(src, blockSize) {
-      const out = new Uint8ClampedArray(src);
-      for (let by = 0; by < H; by += blockSize) {
-        for (let bx = 0; bx < W; bx += blockSize) {
-          let sum = 0, count = 0;
-          for (let y = 0; y < blockSize && by + y < H; y++) {
-            for (let x = 0; x < blockSize && bx + x < W; x++) {
-              sum += src[(by + y) * W + (bx + x)];
-              count++;
-            }
-          }
-          const avg = Math.round(sum / count);
-          for (let y = 0; y < blockSize && by + y < H; y++) {
-            for (let x = 0; x < blockSize && bx + x < W; x++) {
-              out[(by + y) * W + (bx + x)] = Math.round(src[(by + y) * W + (bx + x)] * 0.3 + avg * 0.7);
-            }
-          }
-        }
-      }
-      return out;
-    }
+    function initRoiCanvas() {
+      const c = document.getElementById('roi-canvas');
+      const ctx = c.getContext('2d');
+      let drawing = false;
 
-    // Mathematical Evaluation & Rendering
-    function renderAll() {
-      // Update Split Images
-      const offCanvasRef = document.createElement('canvas');
-      offCanvasRef.width = W; offCanvasRef.height = H;
-      const cRef = offCanvasRef.getContext('2d');
-      const imgRefData = cRef.createImageData(W, H);
-
-      const offCanvasDist = document.createElement('canvas');
-      offCanvasDist.width = W; offCanvasDist.height = H;
-      const cDist = offCanvasDist.getContext('2d');
-      const imgDistData = cDist.createImageData(W, H);
-
-      const ctxSsim = cvSsim.getContext('2d');
-      const ctxErr = cvErr.getContext('2d');
-      const ctxEdge = cvEdge.getContext('2d');
-
-      const imgSsim = ctxSsim.createImageData(W, H);
-      const imgErr = ctxErr.createImageData(W, H);
-      const imgEdge = ctxEdge.createImageData(W, H);
-
-      let totalMSE = 0;
-      for (let i = 0; i < W * H; i++) {
-        const v1 = refData[i], v2 = distData[i];
-        const diff = Math.abs(v1 - v2);
-        totalMSE += diff * diff;
-
-        imgRefData.data[i*4] = v1; imgRefData.data[i*4+1] = v1; imgRefData.data[i*4+2] = v1; imgRefData.data[i*4+3] = 255;
-        imgDistData.data[i*4] = v2; imgDistData.data[i*4+1] = v2; imgDistData.data[i*4+2] = v2; imgDistData.data[i*4+3] = 255;
-
-        // Error Map (Hot/Red)
-        const e = Math.min(255, diff * 2.5);
-        imgErr.data[i*4] = e; imgErr.data[i*4+1] = e * 0.2; imgErr.data[i*4+2] = e * 0.2; imgErr.data[i*4+3] = 255;
-      }
-
-      cRef.putImageData(imgRefData, 0, 0);
-      cDist.putImageData(imgDistData, 0, 0);
-      document.getElementById('img-ref').src = offCanvasRef.toDataURL();
-      document.getElementById('img-dist').src = offCanvasDist.toDataURL();
-
-      // SSIM Calculation (Window Size = 11)
-      const C1 = 6.5025, C2 = 58.5225, r = 5;
-      let ssimSum = 0;
-
-      for (let y = 0; y < H; y++) {
-        for (let x = 0; x < W; x++) {
-          let sumX = 0, sumY = 0, sumX2 = 0, sumY2 = 0, sumXY = 0, count = 0;
-          for (let dy = -r; dy <= r; dy += 2) {
-            const py = Math.min(H - 1, Math.max(0, y + dy));
-            for (let dx = -r; dx <= r; dx += 2) {
-              const px = Math.min(W - 1, Math.max(0, x + dx));
-              const vx = refData[py * W + px], vy = distData[py * W + px];
-              sumX += vx; sumY += vy; sumX2 += vx * vx; sumY2 += vy * vy; sumXY += vx * vy; count++;
-            }
-          }
-          const mx = sumX / count, my = sumY / count;
-          const sx2 = (sumX2 / count) - mx * mx;
-          const sy2 = (sumY2 / count) - my * my;
-          const sxy = (sumXY / count) - mx * my;
-          const localSsim = ((2 * mx * my + C1) * (2 * sxy + C2)) / ((mx * mx + my * my + C1) * (sx2 + sy2 + C2));
-          ssimSum += localSsim;
-
-          // SSIM Quality Map (Jet Colormap: Blue -> Cyan -> Yellow -> Red)
-          const q = Math.max(0, Math.min(1.0, localSsim));
-          const idx = (y * W + x) * 4;
-          imgSsim.data[idx] = Math.round(255 * q);
-          imgSsim.data[idx+1] = Math.round(255 * Math.pow(q, 1.4));
-          imgSsim.data[idx+2] = Math.round(255 * Math.pow(q, 2.5));
-          imgSsim.data[idx+3] = 255;
-
-          // Edge gradient discrepancy
-          const edgeDiff = Math.abs((x > 0 ? Math.abs(refData[y*W+x] - refData[y*W+x-1]) : 0) - (x > 0 ? Math.abs(distData[y*W+x] - distData[y*W+x-1]) : 0));
-          imgEdge.data[idx] = Math.min(255, edgeDiff * 3);
-          imgEdge.data[idx+1] = Math.min(255, edgeDiff * 1.5);
-          imgEdge.data[idx+2] = 255;
-          imgEdge.data[idx+3] = 255;
-        }
-      }
-
-      ctxSsim.putImageData(imgSsim, 0, 0);
-      ctxErr.putImageData(imgErr, 0, 0);
-      ctxEdge.putImageData(imgEdge, 0, 0);
-
-      const meanSSIM = Math.max(0, Math.min(1.0, ssimSum / (W * H)));
-      const mse = totalMSE / (W * H);
-      const psnr = mse > 0 ? (10 * Math.log10((255 * 255) / mse)).toFixed(2) + " dB" : "∞ dB";
-
-      document.getElementById('hud-ssim').textContent = meanSSIM.toFixed(4);
-      document.getElementById('hud-msssim').textContent = (meanSSIM * 0.995).toFixed(4);
-      document.getElementById('hud-mse').textContent = mse.toFixed(2);
-      document.getElementById('hud-psnr').textContent = psnr;
-
-      const qoeEl = document.getElementById('hud-qoe');
-      if (meanSSIM >= 0.95) qoeEl.textContent = "Quality: Excellent (Imperceptible Loss)";
-      else if (meanSSIM >= 0.85) qoeEl.textContent = "Quality: Good (Slight Perceptible)";
-      else if (meanSSIM >= 0.70) qoeEl.textContent = "Quality: Fair (Moderate Degradation)";
-      else qoeEl.textContent = "Quality: Poor / Severe Destruction";
-    }
-
-    // Restoration Function
-    function applyRestoration(method) {
-      let restored = new Uint8ClampedArray(distData);
-      if (method === 'median') {
-        const r = 1;
-        for (let y = 1; y < H - 1; y++) {
-          for (let x = 1; x < W - 1; x++) {
-            const vals = [];
-            for (let dy = -r; dy <= r; dy++) {
-              for (let dx = -r; dx <= r; dx++) vals.push(distData[(y + dy) * W + (x + dx)]);
-            }
-            vals.sort((a,b) => a - b);
-            restored[y * W + x] = vals[4];
-          }
-        }
-      } else if (method === 'gaussian') {
-        restored = applyFastBlur(distData, 1.2);
-      } else if (method === 'unsharp') {
-        const blurred = applyFastBlur(distData, 1.5);
-        for (let i = 0; i < restored.length; i++) {
-          restored[i] = Math.max(0, Math.min(255, distData[i] + (distData[i] - blurred[i]) * 0.8));
-        }
-      }
-
-      const prevSSIM = parseFloat(document.getElementById('hud-ssim').textContent);
-      distData = restored;
-      renderAll();
-      const newSSIM = parseFloat(document.getElementById('hud-ssim').textContent);
-      const delta = (newSSIM - prevSSIM).toFixed(4);
-
-      document.getElementById('restoration-status').innerHTML = `
-        <strong>Algorithm Applied: ${method.toUpperCase()}</strong><br>
-        Previous SSIM: <code>${prevSSIM.toFixed(4)}</code> ➔ Restored SSIM: <code>${newSSIM.toFixed(4)}</code>
-        (<span style="color: ${delta >= 0 ? 'var(--success)' : 'var(--danger)'}; font-weight: bold;">Δ SSIM = ${delta >= 0 ? '+' : ''}${delta}</span>)
-      `;
-    }
-
-    // Image Uploading
-    function uploadImage(e, type) {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function(evt) {
-        const img = new Image();
-        img.onload = function() {
-          const c = document.createElement('canvas');
-          c.width = W; c.height = H;
-          const ctx = c.getContext('2d');
-          ctx.drawImage(img, 0, 0, W, H);
-          const data = ctx.getImageData(0, 0, W, H).data;
-          const arr = (type === 'ref') ? refData : distData;
-          for (let i = 0; i < W * H; i++) {
-            arr[i] = Math.round(0.299 * data[i*4] + 0.587 * data[i*4+1] + 0.114 * data[i*4+2]);
-          }
-          if (type === 'ref') distData = new Uint8ClampedArray(refData);
-          renderAll();
-        };
-        img.src = evt.target.result;
+      c.onmousedown = (e) => {
+        drawing = true;
+        const rect = c.getBoundingClientRect();
+        roiStart = { x: e.clientX - rect.left, y: e.clientY - rect.top };
       };
-      reader.readAsDataURL(file);
+
+      c.onmousemove = (e) => {
+        if (!drawing) return;
+        const rect = c.getBoundingClientRect();
+        const curX = e.clientX - rect.left;
+        const curY = e.clientY - rect.top;
+        ctx.clearRect(0, 0, c.width, c.height);
+        ctx.strokeStyle = '#65A9FF';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(roiStart.x, roiStart.y, curX - roiStart.x, curY - roiStart.y);
+      };
+
+      c.onmouseup = async (e) => {
+        drawing = false;
+        const rect = c.getBoundingClientRect();
+        const endX = e.clientX - rect.left;
+        const endY = e.clientY - rect.top;
+
+        // Map ROI to image coords [ymin, xmin, ymax, xmax]
+        const ymin = Math.round(Math.min(roiStart.y, endY) / c.height * H);
+        const ymax = Math.round(Math.max(roiStart.y, endY) / c.height * H);
+        const xmin = Math.round(Math.min(roiStart.x, endX) / c.width * W);
+        const xmax = Math.round(Math.max(roiStart.x, endX) / c.width * W);
+
+        document.getElementById('roi-feedback').style.display = 'block';
+        document.getElementById('roi-coords').textContent = `[${ymin}, ${xmin}] to [${ymax}, ${xmax}]`;
+
+        await updateAnalysis([ymin, xmin, ymax, xmax]);
+        document.getElementById('roi-ssim-val').textContent = currentMetrics.ssim.toFixed(4);
+      };
     }
 
-    window.onload = renderAll;
+    function downloadComparison() {
+      const a = document.createElement('a');
+      a.href = currentDistBase64;
+      a.download = "comparison_distorted.png";
+      a.click();
+    }
+
+    // Startup Initialization
+    window.onload = function() {
+      loadPattern('einstein');
+    };
   </script>
 </body>
 </html>

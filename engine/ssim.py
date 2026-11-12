@@ -1,11 +1,12 @@
 """
 SSIM & MS-SSIM Core Mathematical Implementation
 Wang et al., IEEE TIP 2004 & IEEE Asilomar 2003
-Natively implemented in PyTorch with dynamic data_range calibration and GPU/MPS auto-dispatch.
+Natively implemented in PyTorch with dynamic data_range calibration,
+configurable window sizes, multi-channel handling, and Region-of-Interest (ROI) support.
 """
 
 import math
-from typing import Tuple, Optional, Union
+from typing import Tuple, Optional, Union, List, Dict, Any
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -41,7 +42,7 @@ def _ssim_per_channel(
 ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
     """
     Computes luminance (l), contrast (c), structure (s), and combined SSIM map.
-    Returns: (ssim_map, cs_map, l_map, c_map)
+    Returns: (ssim_map, cs_map, l_map, sigma1_sq)
     """
     pad = window_size // 2
     mu1 = F.conv2d(img1, window, padding=pad, groups=channel)
@@ -59,7 +60,7 @@ def _ssim_per_channel(
     C1 = (K1 * data_range) ** 2
     C2 = (K2 * data_range) ** 2
 
-    # Components
+    # Luminance and Contrast-Structure components
     l_map = (2.0 * mu1_mu2 + C1) / (mu1_sq + mu2_sq + C1)
     cs_map = (2.0 * sigma12 + C2) / (sigma1_sq + sigma2_sq + C2)
     ssim_map = l_map * cs_map
@@ -74,15 +75,18 @@ def ssim(
     size_average: bool = True,
     return_map: bool = False,
     sigma: float = 1.5,
+    roi: Optional[Tuple[int, int, int, int]] = None,
 ) -> Union[torch.Tensor, Tuple[torch.Tensor, torch.Tensor]]:
     """
     Functional Standard SSIM Index (Wang et al. 2004).
     Args:
-        img1, img2: Tensors of shape (B, C, H, W)
+        img1, img2: Tensors of shape (B, C, H, W) or (C, H, W)
         window_size: Sliding Gaussian window size (default 11)
         data_range: Peak-to-peak intensity range L (auto-detected if None)
         size_average: Average over batch and spatial dimensions
         return_map: If True, returns (mean_ssim, ssim_map)
+        sigma: Standard deviation of Gaussian window
+        roi: Optional bounding box (ymin, xmin, ymax, xmax) for regional evaluation
     """
     if img1.dim() == 3:
         img1 = img1.unsqueeze(0)
@@ -95,10 +99,23 @@ def ssim(
     if data_range is None:
         data_range = _auto_detect_data_range(img1, img2)
 
-    _, channel, _, _ = img1.size()
+    _, channel, H, W = img1.size()
     window = create_gaussian_window(window_size, channel, sigma).to(img1.device, dtype=img1.dtype)
 
     ssim_map, _, _, _ = _ssim_per_channel(img1, img2, window, window_size, channel, data_range)
+
+    # Regional SSIM (ROI)
+    if roi is not None:
+        ymin, xmin, ymax, xmax = roi
+        ymin = max(0, min(H - 1, int(ymin)))
+        xmin = max(0, min(W - 1, int(xmin)))
+        ymax = max(ymin + 1, min(H, int(ymax)))
+        xmax = max(xmin + 1, min(W, int(xmax)))
+        roi_map = ssim_map[:, :, ymin:ymax, xmin:xmax]
+        val = roi_map.mean() if size_average else roi_map.mean(dim=[-3, -2, -1])
+        if return_map:
+            return val, ssim_map
+        return val
 
     if size_average:
         val = ssim_map.mean()
@@ -117,18 +134,20 @@ class SSIM(nn.Module):
         data_range: Optional[float] = None,
         size_average: bool = True,
         channel: int = 1,
+        sigma: float = 1.5,
     ):
         super(SSIM, self).__init__()
         self.window_size = window_size
         self.data_range = data_range
         self.size_average = size_average
         self.channel = channel
-        self.register_buffer("window", create_gaussian_window(window_size, channel))
+        self.sigma = sigma
+        self.register_buffer("window", create_gaussian_window(window_size, channel, sigma))
 
     def forward(self, img1: torch.Tensor, img2: torch.Tensor) -> torch.Tensor:
         if img1.size(1) != self.channel or self.window.device != img1.device:
             self.channel = img1.size(1)
-            self.window = create_gaussian_window(self.window_size, self.channel).to(img1.device, dtype=img1.dtype)
+            self.window = create_gaussian_window(self.window_size, self.channel, self.sigma).to(img1.device, dtype=img1.dtype)
         data_range = self.data_range or _auto_detect_data_range(img1, img2)
         ssim_map, _, _, _ = _ssim_per_channel(img1, img2, self.window, self.window_size, self.channel, data_range)
         return ssim_map.mean() if self.size_average else ssim_map.mean(dim=[-3, -2, -1])
@@ -143,7 +162,7 @@ def ms_ssim(
 ) -> torch.Tensor:
     """
     Multi-Scale Structural Similarity Index (MS-SSIM) (Wang et al. 2003).
-    Evaluates contrast and structure across 5 pyramid scales.
+    Evaluates contrast and structure across 5 pyramid scales with 2x2 decimation.
     """
     if img1.dim() == 3:
         img1 = img1.unsqueeze(0)
@@ -163,7 +182,7 @@ def ms_ssim(
     # Verify resolution supports downsampling
     max_levels = int(math.log2(min(H, W) / window_size)) + 1
     if levels > max_levels:
-        weights = weights[:max_levels]
+        weights = weights[:max(1, max_levels)]
         weights = weights / weights.sum()
         levels = len(weights)
 
@@ -183,7 +202,6 @@ def ms_ssim(
 
     # Weighted geometric mean in log space for numerical stability
     mcs_stack = torch.stack(mcs, dim=-1)
-    # Clamp negative values to epsilon
     mcs_stack = torch.clamp(mcs_stack, min=1e-8)
     overall_ms_ssim = torch.exp(torch.sum(weights * torch.log(mcs_stack), dim=-1))
 
