@@ -61,14 +61,28 @@ def compute_diagnostic_maps(
     error_arr = np.clip(error_map_t.squeeze().detach().cpu().numpy(), 0.0, 1.0)
     edge_arr = np.clip(edge_diff_t.squeeze().detach().cpu().numpy(), 0.0, 1.0)
 
+    edge_ref_arr = np.clip(edges_ref.squeeze().detach().cpu().numpy(), 0.0, 1.0)
+    edge_dist_arr = np.clip(edges_dist.squeeze().detach().cpu().numpy(), 0.0, 1.0)
+
     # Threshold mask: pixels with severe degradation
     threshold_mask = (ssim_arr < threshold).astype(np.float32)
+
+    # Error distribution histogram (30 bins across [0.0, 1.0])
+    hist_counts, bin_edges = np.histogram(error_arr, bins=30, range=(0.0, 1.0))
 
     return {
         "ssim_map": ssim_arr,
         "error_map": error_arr,
         "edge_diff_map": edge_arr,
+        "ref_edges": edge_ref_arr,
+        "dist_edges": edge_dist_arr,
         "threshold_mask": threshold_mask,
+        "histogram": {
+            "counts": hist_counts.tolist(),
+            "bins": [round(float(b), 3) for b in bin_edges.tolist()],
+            "mean": float(np.mean(error_arr)),
+            "max": float(np.max(error_arr)),
+        }
     }
 
 def array_to_base64_image(arr: np.ndarray, colormap: str = "jet", ref_bg: Optional[np.ndarray] = None, alpha: float = 0.6) -> str:

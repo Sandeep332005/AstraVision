@@ -41,7 +41,7 @@ from engine.restoration import (
     benchmark_restorations,
 )
 from engine.visualizer import compute_diagnostic_maps, array_to_base64_image
-from engine.experiments import save_experiment, list_experiments, get_experiment
+from engine.experiments import save_experiment, list_experiments, get_experiment, delete_experiment
 from engine.reports import generate_markdown_report, generate_csv_report
 
 def base64_to_tensor(b64_str: str) -> Tuple[torch.Tensor, Tuple[int, int]]:
@@ -87,6 +87,7 @@ class SSIMLabRequestHandler(SimpleHTTPRequestHandler):
             "/api/benchmark": self._handle_benchmark,
             "/api/experiments/save": self._handle_save_experiment,
             "/api/experiments/list": self._handle_list_experiments,
+            "/api/experiments/delete": self._handle_delete_experiment,
             "/api/reports/export": self._handle_export_report,
         }
 
@@ -148,10 +149,13 @@ class SSIMLabRequestHandler(SimpleHTTPRequestHandler):
                 "metrics": metrics,
                 "heatmaps": {
                     "ssim_map": array_to_base64_image(maps["ssim_map"], colormap="jet"),
-                    "error_map": array_to_base64_image(maps["error_map"], colormap="hot"),
-                    "edge_diff_map": array_to_base64_image(maps["edge_diff_map"], colormap="jet"),
+                    "error_map": array_to_base64_image(maps["error_map"], colormap="gray"),
+                    "edge_diff_map": array_to_base64_image(maps["edge_diff_map"], colormap="gray"),
+                    "ref_edges": array_to_base64_image(maps["ref_edges"], colormap="gray"),
+                    "dist_edges": array_to_base64_image(maps["dist_edges"], colormap="gray"),
                     "threshold_mask": array_to_base64_image(maps["threshold_mask"], colormap="mask", ref_bg=ref_np, alpha=0.7),
                 },
+                "histogram": maps.get("histogram", {}),
                 "image_meta": {
                     "width": w_ref,
                     "height": h_ref,
@@ -278,6 +282,14 @@ class SSIMLabRequestHandler(SimpleHTTPRequestHandler):
         try:
             records = list_experiments()
             self._send_json({"experiments": records})
+        except Exception as e:
+            self._send_json({"error": str(e)}, status=500)
+
+    def _handle_delete_experiment(self, data: dict):
+        try:
+            exp_id = data.get("id")
+            success = delete_experiment(exp_id)
+            self._send_json({"status": "success" if success else "not_found"})
         except Exception as e:
             self._send_json({"error": str(e)}, status=500)
 

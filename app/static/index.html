@@ -3,242 +3,917 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SSIM LAB — Image Quality Intelligence Platform</title>
+  <title>AstraVision SSIM Lab — Image Quality Intelligence Platform</title>
+  
+  <!-- Fonts: Playfair Display (Serif), Inter (Sans), JetBrains Mono (Technical) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
   <style>
+    /* ==========================================================================
+       WARM EDITORIAL DESIGN TOKENS (AstraVision SSIM Lab)
+       ========================================================================== */
     :root {
-      --bg: #111215;
-      --surface-2: #18191E;
-      --card-bg: #1E2026;
-      --border: #2B2D35;
-      --border-focus: #65A9FF;
-      --accent: #65A9FF;
-      --accent-glow: rgba(101, 169, 255, 0.15);
-      --success: #35C98A;
-      --warning: #E5A64B;
-      --danger: #F06B70;
-      --text: #F3F4F6;
-      --text-muted: #8E929E;
+      --canvas: #F5F1E8;             /* Warm Ivory */
+      --surface: #FFFCF6;            /* Paper White */
+      --surface-secondary: #F0EBE2;  /* Soft Warm Stone */
+      --surface-muted: #E8E2D7;      /* Muted Neutral */
+      --border: #E3DED3;             /* Soft Border */
+      --border-strong: #D5CEBF;      /* Reinforced Border */
+      --shadow: 0 3px 14px rgba(57, 50, 35, 0.05);
+      
+      --primary: #858B6B;            /* Muted Olive */
+      --primary-hover: #737A5C;      /* Mid Olive */
+      --primary-dark: #62694D;       /* Deep Olive (Active button/tab) */
+      --primary-soft: #E7E9DC;       /* Soft Sage Tint */
+
+      --text-primary: #302F29;       /* Charcoal Ink */
+      --text-secondary: #777568;     /* Muted Charcoal */
+      --text-muted: #9B978A;         /* Light Stone Text */
+
+      --metric-ssim: #78845C;        /* Olive Green */
+      --metric-ms-ssim: #8B8064;     /* Antique Bronze */
+      --metric-psnr: #788A8A;        /* Slate Sage */
+      --metric-error: #C27B70;       /* Terracotta Rose */
+      --metric-lpips: #A18A68;       /* Warm Ochre */
+
+      --success: #6E8B58;
+      --warning: #D49D42;
+      --danger: #C27B70;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, sans-serif; }
-    body { background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
 
-    /* Top Navigation */
-    header { background: var(--surface-2); border-bottom: 1px solid var(--border); padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; z-index: 100; flex-wrap: wrap; gap: 12px; }
-    .brand { display: flex; align-items: center; gap: 12px; }
-    .logo-badge { background: #1E2026; border: 1px solid var(--border); color: var(--accent); font-weight: 800; font-size: 13px; padding: 5px 10px; border-radius: 6px; letter-spacing: 0.08em; font-family: 'JetBrains Mono', monospace; }
-    .brand-title { font-size: 16px; font-weight: 700; color: #fff; letter-spacing: -0.01em; }
-    .brand-sub { font-size: 11px; color: var(--text-muted); border-left: 1px solid var(--border); padding-left: 10px; font-family: 'JetBrains Mono', monospace; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--canvas);
+      color: var(--text-primary);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
 
-    .nav-tabs { display: flex; gap: 4px; background: var(--bg); padding: 4px; border-radius: 8px; border: 1px solid var(--border); }
-    .nav-btn { background: transparent; border: none; color: var(--text-muted); font-size: 12px; font-weight: 600; padding: 6px 14px; border-radius: 6px; cursor: pointer; transition: all 0.15s; }
-    .nav-btn:hover { color: #fff; }
-    .nav-btn.active { background: var(--card-bg); color: #fff; border: 1px solid var(--border); }
+    /* ==========================================================================
+       TOP HEADER & NAVIGATION
+       ========================================================================== */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 28px 12px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 1px 4px rgba(57, 50, 35, 0.03);
+    }
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .brand-logo-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .brand-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 23px;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+    }
+    .brand-subtitle {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      font-family: 'Inter', sans-serif;
+    }
+    .brand-divider {
+      width: 1px;
+      height: 32px;
+      background: var(--border-strong);
+    }
+    .brand-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .brand-meta-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    .brand-meta-sub {
+      font-size: 11px;
+      color: var(--text-secondary);
+      font-family: 'JetBrains Mono', monospace;
+    }
 
-    .header-actions { display: flex; gap: 8px; align-items: center; }
-    .btn { background: var(--surface-2); border: 1px solid var(--border); color: var(--text); font-size: 12px; font-weight: 600; padding: 7px 12px; border-radius: 6px; cursor: pointer; transition: all 0.15s; display: inline-flex; align-items: center; gap: 6px; }
-    .btn:hover { border-color: var(--accent); color: #fff; }
-    .btn-primary { background: rgba(101, 169, 255, 0.15); border-color: var(--accent); color: var(--accent); }
-    .btn-primary:hover { background: var(--accent); color: #000; }
-    .btn-success { background: rgba(53, 201, 138, 0.15); border-color: var(--success); color: var(--success); }
-    .btn-success:hover { background: var(--success); color: #000; }
+    /* Navigation Pill Tabs */
+    .nav-tabs {
+      display: flex;
+      gap: 6px;
+      background: var(--surface-secondary);
+      padding: 4px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+    }
+    .nav-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 7px 15px;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      font-family: 'Inter', sans-serif;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .nav-btn:hover {
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.6);
+    }
+    .nav-btn.active {
+      background: var(--primary-dark);
+      color: #FFFFFF;
+      box-shadow: 0 2px 6px rgba(98, 105, 77, 0.25);
+    }
 
-    /* Main Grid */
-    .container { max-width: 1680px; width: 100%; margin: 0 auto; padding: 20px; display: grid; grid-template-columns: 380px 1fr; gap: 20px; flex: 1; }
-    @media (max-width: 1200px) { .container { grid-template-columns: 1fr; } }
+    /* Second Action Row */
+    .header-bottom {
+      display: flex;
+      justify-content: flex-start;
+      gap: 10px;
+      align-items: center;
+    }
+    .btn {
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
+      color: var(--text-primary);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'Inter', sans-serif;
+    }
+    .btn:hover {
+      background: var(--surface-secondary);
+      border-color: var(--primary);
+    }
+    .btn-olive {
+      background: var(--primary-dark);
+      border-color: var(--primary-dark);
+      color: #FFFFFF;
+    }
+    .btn-olive:hover {
+      background: var(--primary-hover);
+      border-color: var(--primary-hover);
+      color: #FFFFFF;
+    }
 
-    /* Cards */
-    .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 18px; margin-bottom: 18px; }
-    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px; }
-    .card-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #E5E7EB; display: flex; align-items: center; gap: 8px; }
+    /* ==========================================================================
+       MAIN WORKSPACE LAYOUT
+       ========================================================================== */
+    .container {
+      max-width: 1720px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 20px 24px;
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 22px;
+      flex: 1;
+    }
+    @media (max-width: 1200px) {
+      .container { grid-template-columns: 1fr; }
+    }
 
-    /* Dropzones */
-    .drop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
-    .dropzone { border: 1px dashed var(--border); border-radius: 8px; padding: 12px 6px; text-align: center; cursor: pointer; background: var(--surface-2); transition: all 0.15s; }
-    .dropzone:hover { border-color: var(--accent); background: rgba(101, 169, 255, 0.04); }
-    .dz-title { font-size: 11px; font-weight: 700; color: var(--text); }
-    .dz-sub { font-size: 10px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+    /* Warm Editorial Cards */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+      margin-bottom: 18px;
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--surface-secondary);
+    }
+    .card-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .card-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
 
-    /* Sliders & Controls */
+    /* ==========================================================================
+       LEFT SIDEBAR: DUAL INPUT & DISTORTION LAB
+       ========================================================================== */
+    .drop-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .dropzone {
+      border: 1.5px dashed var(--border-strong);
+      border-radius: 10px;
+      padding: 16px 8px;
+      text-align: center;
+      cursor: pointer;
+      background: var(--surface-secondary);
+      transition: all 0.18s ease;
+    }
+    .dropzone:hover {
+      border-color: var(--primary);
+      background: var(--primary-soft);
+    }
+    .dz-icon {
+      font-size: 20px;
+      margin-bottom: 4px;
+      color: var(--primary-dark);
+    }
+    .dz-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    .dz-sub {
+      font-size: 10px;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Preset List */
+    .preset-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+    .preset-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 9px 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .preset-item:hover {
+      border-color: var(--primary);
+      background: var(--surface-secondary);
+    }
+    .preset-item.active {
+      background: var(--primary-dark);
+      border-color: var(--primary-dark);
+      color: #FFFFFF;
+      font-weight: 600;
+      box-shadow: 0 2px 6px rgba(98, 105, 77, 0.2);
+    }
+    .preset-item.active .preset-sub {
+      color: rgba(255, 255, 255, 0.85);
+    }
+    .preset-sub {
+      font-size: 10.5px;
+      color: var(--text-secondary);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Parametric Controls */
     .control-row { margin-bottom: 12px; }
-    .control-label { display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; color: #D1D5DB; margin-bottom: 5px; }
-    .control-val { color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 11px; }
-    input[type="range"] { width: 100%; accent-color: var(--accent); background: #2B2D35; height: 4px; border-radius: 2px; outline: none; cursor: pointer; }
-    input[type="number"], input[type="text"], select { background: var(--surface-2); border: 1px solid var(--border); color: #fff; padding: 6px 10px; border-radius: 6px; font-size: 12px; outline: none; width: 100%; font-family: 'JetBrains Mono', monospace; }
-    input[type="number"]:focus, input[type="text"]:focus, select:focus { border-color: var(--accent); }
+    .control-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 5px;
+    }
+    .control-val {
+      color: var(--primary-dark);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--primary-dark);
+      background: var(--border-strong);
+      height: 4px;
+      border-radius: 2px;
+      outline: none;
+      cursor: pointer;
+    }
+    input[type="number"], select {
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
+      color: var(--text-primary);
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      outline: none;
+      width: 100%;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    input[type="number"]:focus, select:focus {
+      border-color: var(--primary-dark);
+    }
 
-    /* Preset Buttons */
-    .preset-list { display: flex; flex-direction: column; gap: 5px; }
-    .preset-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 10px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 6px; color: #E2E8F0; font-size: 11px; cursor: pointer; transition: all 0.15s; }
-    .preset-item:hover { background: #22242B; border-color: var(--accent); }
-    .preset-item.active { background: rgba(101, 169, 255, 0.12); border-color: var(--accent); color: #93C5FD; font-weight: 600; }
-    .preset-sub { font-size: 10px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+    /* ==========================================================================
+       RIGHT WORKSPACE: 5 METRIC CARDS
+       ========================================================================== */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+    @media (max-width: 1000px) {
+      .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    .metric-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    .metric-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-1px);
+    }
+    .m-hdr {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+    .m-icon {
+      font-size: 15px;
+      color: var(--primary-dark);
+    }
+    .m-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-secondary);
+    }
+    .m-value {
+      font-size: 26px;
+      font-weight: 800;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-primary);
+      line-height: 1.1;
+      margin-bottom: 4px;
+    }
+    .m-sub {
+      font-size: 10px;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
 
-    /* Telemetry HUD */
-    .metrics-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 18px; }
-    @media (max-width: 1000px) { .metrics-grid { grid-template-columns: repeat(2, 1fr); } }
-    .metric-box { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px; text-align: center; }
-    .metric-box.hero { border-color: rgba(101, 169, 255, 0.4); background: linear-gradient(180deg, rgba(101, 169, 255, 0.08), transparent); }
-    .m-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); font-weight: 700; }
-    .m-val { font-size: 24px; font-weight: 800; font-family: 'JetBrains Mono', monospace; margin: 3px 0; }
-    .m-sub { font-size: 10px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
-    .val-ssim { color: var(--success); }
+    /* ==========================================================================
+       IMAGE COMPARISON VIEWER
+       ========================================================================== */
+    .viewer-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: var(--shadow);
+      margin-bottom: 18px;
+    }
+    .view-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      font-size: 11px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .view-mode-pill {
+      display: inline-flex;
+      background: var(--surface-secondary);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2px;
+    }
+    .vm-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 5px 12px;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .vm-btn.active {
+      background: var(--primary-dark);
+      color: #FFFFFF;
+    }
 
-    /* Viewport Studio */
-    .view-toolbar { display: flex; justify-content: space-between; align-items: center; background: var(--surface-2); border: 1px solid var(--border); border-bottom: none; border-radius: 8px 8px 0 0; padding: 8px 14px; font-size: 11px; font-family: 'JetBrains Mono', monospace; flex-wrap: wrap; gap: 8px; }
-    .split-viewport { position: relative; width: 100%; height: 500px; background: #0A0B0E; border: 1px solid var(--border); border-radius: 0 0 8px 8px; overflow: hidden; margin-bottom: 18px; cursor: grab; user-select: none; }
+    /* Viewport Frame */
+    .split-viewport {
+      position: relative;
+      width: 100%;
+      height: 480px;
+      background: #0E0F12;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      cursor: grab;
+      user-select: none;
+    }
     .split-viewport:active { cursor: grabbing; }
-    .canvas-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; transform-origin: 0 0; }
-    .view-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
-    .view-img.dist { clip-path: polygon(50% 0, 100% 0, 100% 100%, 50% 100%); }
-    .split-divider { position: absolute; top: 0; bottom: 0; left: 50%; width: 2px; background: #fff; cursor: ew-resize; z-index: 20; box-shadow: 0 0 10px rgba(0,0,0,0.8); }
-    .split-handle { position: absolute; top: 50%; left: -12px; width: 26px; height: 26px; border-radius: 50%; background: #fff; color: #000; font-size: 10px; font-weight: bold; display: flex; align-items: center; justify-content: center; transform: translateY(-50%); box-shadow: 0 2px 8px rgba(0,0,0,0.5); }
-    .view-badge { position: absolute; top: 10px; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; z-index: 15; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); font-family: 'JetBrains Mono', monospace; }
-    .badge-ref { left: 10px; color: var(--success); border: 1px solid rgba(53, 201, 138, 0.3); }
-    .badge-dist { right: 10px; color: var(--accent); border: 1px solid rgba(101, 169, 255, 0.3); }
+    .canvas-container {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      transform-origin: 0 0;
+    }
+    .view-img {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      object-fit: contain;
+      pointer-events: none;
+    }
+    .view-img.dist {
+      clip-path: polygon(50% 0, 100% 0, 100% 100%, 50% 100%);
+    }
+    .split-divider {
+      position: absolute;
+      top: 0; bottom: 0; left: 50%;
+      width: 2px;
+      background: #FFFFFF;
+      cursor: ew-resize;
+      z-index: 20;
+      box-shadow: 0 0 8px rgba(0,0,0,0.6);
+    }
+    .split-handle {
+      position: absolute;
+      top: 50%; left: -14px;
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      background: #FFFFFF;
+      color: var(--text-primary);
+      font-size: 11px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform: translateY(-50%);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      cursor: ew-resize;
+    }
+    .view-badge {
+      position: absolute;
+      top: 12px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      z-index: 15;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .badge-ref {
+      left: 12px;
+      background: var(--primary-dark);
+      color: #FFFFFF;
+    }
+    .badge-dist {
+      right: 12px;
+      background: var(--surface-muted);
+      color: var(--text-primary);
+      border: 1px solid var(--border-strong);
+    }
 
     /* Side-by-side mode */
     .split-viewport.mode-side .view-img#img-ref { width: 50%; left: 0; clip-path: none !important; }
     .split-viewport.mode-side .view-img#img-dist { width: 50%; left: 50%; clip-path: none !important; }
     .split-viewport.mode-side .split-divider { display: none; }
-    .split-viewport.mode-side .badge-dist { right: auto; left: 510px; }
+    .split-viewport.mode-side .badge-dist { right: auto; left: 51%; }
 
     /* Toggle mode */
     .split-viewport.mode-toggle .view-img#img-ref { width: 100%; left: 0; clip-path: none !important; }
     .split-viewport.mode-toggle .view-img#img-dist { width: 100%; left: 0; clip-path: none !important; }
     .split-viewport.mode-toggle .split-divider { display: none; }
 
-    /* ROI Box Drawer */
-    #roi-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 25; pointer-events: none; }
+    /* ROI Canvas */
+    #roi-canvas {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      z-index: 25; pointer-events: none;
+    }
     #roi-canvas.active { pointer-events: auto; cursor: crosshair; }
 
-    /* Heatmap Grid */
-    .heatmap-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 18px; }
-    @media (max-width: 900px) { .heatmap-grid { grid-template-columns: 1fr; } }
-    .heatmap-card { background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
-    .heatmap-hdr { padding: 8px 12px; background: rgba(0,0,0,0.3); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; text-transform: uppercase; }
-    .heatmap-img { width: 100%; aspect-ratio: 1.2; object-fit: contain; display: block; background: #000; }
+    /* ==========================================================================
+       BOTTOM DUAL CARDS: STRUCTURAL ANALYSIS & QUICK ACTIONS
+       ========================================================================== */
+    .bottom-grid {
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: 18px;
+    }
+    @media (max-width: 1000px) {
+      .bottom-grid { grid-template-columns: 1fr; }
+    }
 
-    /* Benchmark Table */
-    .b-table { width: 100%; border-collapse: collapse; font-size: 11px; text-align: left; }
-    .b-table th { background: var(--surface-2); padding: 9px 12px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; border-bottom: 1px solid var(--border); font-family: 'JetBrains Mono', monospace; }
-    .b-table td { padding: 9px 12px; border-bottom: 1px solid rgba(255,255,255,0.04); font-family: 'JetBrains Mono', monospace; }
-    .b-table tr:hover td { background: rgba(255,255,255,0.02); }
-    .tag { padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 700; text-transform: uppercase; }
-    .tag-improved { background: rgba(53, 201, 138, 0.15); color: var(--success); }
-    .tag-degraded { background: rgba(240, 107, 112, 0.15); color: var(--danger); }
-    .tag-neutral { background: rgba(142, 146, 158, 0.15); color: var(--text-muted); }
+    .analysis-tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 14px;
+      border-bottom: 1px solid var(--surface-secondary);
+      padding-bottom: 8px;
+      flex-wrap: wrap;
+    }
+    .atab-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-secondary);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+    .atab-btn:hover { background: var(--surface-secondary); color: var(--text-primary); }
+    .atab-btn.active {
+      background: var(--primary-dark);
+      color: #FFFFFF;
+    }
 
-    /* Status Bar */
-    .status-bar { background: var(--surface-2); border-top: 1px solid var(--border); padding: 8px 24px; font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center; }
+    .analysis-trio-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 14px;
+    }
+    @media (max-width: 900px) {
+      .analysis-trio-grid { grid-template-columns: 1fr; }
+    }
+    .trio-card {
+      background: var(--surface-secondary);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+    }
+    .trio-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .trio-content-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+    }
+    .trio-img {
+      width: 100%;
+      height: 140px;
+      object-fit: contain;
+      background: #000;
+      border-radius: 6px;
+    }
+    .legend-bar-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 140px;
+      gap: 2px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      color: var(--text-secondary);
+    }
+    .legend-bar {
+      width: 10px;
+      flex: 1;
+      border-radius: 3px;
+      border: 1px solid rgba(0,0,0,0.1);
+    }
+    .legend-bar.jet {
+      background: linear-gradient(to bottom, #FF0000, #FFFF00, #00FF00, #00FFFF, #0000FF);
+    }
+    .legend-bar.gray {
+      background: linear-gradient(to bottom, #FFFFFF, #000000);
+    }
+
+    /* Quick Actions List */
+    .quick-actions-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .qa-btn {
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
+      padding: 11px 14px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-primary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.15s ease;
+      text-align: left;
+    }
+    .qa-btn:hover {
+      background: var(--surface-secondary);
+      border-color: var(--primary);
+    }
+    .qa-icon {
+      font-size: 15px;
+      color: var(--primary-dark);
+    }
+
+    /* ==========================================================================
+       BENCHMARK & RESTORATION TABLES
+       ========================================================================== */
+    .b-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11.5px;
+      text-align: left;
+    }
+    .b-table th {
+      background: var(--surface-secondary);
+      padding: 9px 12px;
+      color: var(--text-secondary);
+      font-weight: 700;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .b-table td {
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--surface-secondary);
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-primary);
+    }
+    .b-table tr:hover td { background: var(--surface-secondary); }
+    .tag {
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 9.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .tag-improved { background: rgba(110, 139, 88, 0.2); color: var(--success); }
+    .tag-degraded { background: rgba(194, 123, 112, 0.2); color: var(--danger); }
+    .tag-neutral { background: var(--surface-secondary); color: var(--text-secondary); }
+
+    /* ==========================================================================
+       FOOTER
+       ========================================================================== */
+    footer.status-bar {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 10px 28px;
+      font-size: 11.5px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-secondary);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: auto;
+    }
     .status-indicator { display: flex; align-items: center; gap: 8px; }
-    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); }
-    .status-dot.busy { background: var(--warning); animation: pulse 1s infinite; }
+    .status-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+    }
+    .status-dot.busy {
+      background: var(--warning);
+      animation: pulse 1s infinite;
+    }
     @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
+
+    /* Metric Modal */
+    .modal-backdrop {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(48, 47, 41, 0.5);
+      backdrop-filter: blur(3px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-card {
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
+      border-radius: 16px;
+      width: 520px;
+      max-width: 90vw;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(57, 50, 35, 0.15);
+    }
+    .modal-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 16px; border-bottom: 1px solid var(--border);
+      padding-bottom: 10px;
+    }
+    .modal-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 18px; font-weight: 700; color: var(--text-primary);
+    }
+    .modal-close {
+      background: none; border: none; font-size: 18px; cursor: pointer; color: var(--text-secondary);
+    }
   </style>
 </head>
 <body>
 
-  <!-- HEADER -->
+  <!-- ========================================================================
+       TOP HEADER
+       ======================================================================== -->
   <header>
-    <div class="brand">
-      <span class="logo-badge">SSIM LAB</span>
-      <div>
-        <div class="brand-title">Image Quality Intelligence Platform</div>
+    <div class="header-top">
+      <div class="brand-section">
+        <!-- AstraVision Geometric Triangle Logo -->
+        <div class="brand-logo-group">
+          <svg width="30" height="30" viewBox="0 0 32 32" fill="none">
+            <path d="M16 3L3 27H29L16 3Z" stroke="#62694D" stroke-width="2.5" stroke-linejoin="round"/>
+            <path d="M16 11L9 24H23L16 11Z" stroke="#858B6B" stroke-width="1.8" stroke-linejoin="round"/>
+            <circle cx="16" cy="18" r="2.5" fill="#62694D"/>
+          </svg>
+          <div>
+            <div class="brand-title">AstraVision</div>
+            <div class="brand-subtitle">SSIM Lab</div>
+          </div>
+        </div>
+
+        <div class="brand-divider"></div>
+
+        <div class="brand-meta">
+          <div class="brand-meta-title">Image Quality Intelligence Platform</div>
+          <div class="brand-meta-sub">Wang et al. (IEEE TIP 2004) · PyTorch 2.x Engine</div>
+        </div>
       </div>
-      <div class="brand-sub">Wang et al. (IEEE TIP 2004) · PyTorch 2.x Engine</div>
+
+      <!-- Navigation Pill Tabs -->
+      <div class="nav-tabs">
+        <button class="nav-btn active" data-tab="comparison" onclick="setNavTab('comparison', this)">1. Comparison Studio</button>
+        <button class="nav-btn" data-tab="heatmaps" onclick="setNavTab('heatmaps', this)">2. Structural Heatmaps</button>
+        <button class="nav-btn" data-tab="restoration" onclick="setNavTab('restoration', this)">3. Restoration Lab</button>
+        <button class="nav-btn" data-tab="benchmark" onclick="setNavTab('benchmark', this)">4. Benchmark Arena</button>
+        <button class="nav-btn" data-tab="experiments" onclick="setNavTab('experiments', this)">5. Experiments</button>
+      </div>
     </div>
 
-    <div class="nav-tabs">
-      <button class="nav-btn active" data-tab="comparison" onclick="setTab('comparison', this)">1. Comparison Studio</button>
-      <button class="nav-btn" data-tab="heatmaps" onclick="setTab('heatmaps', this)">2. Structural Heatmaps</button>
-      <button class="nav-btn" data-tab="restoration" onclick="setTab('restoration', this)">3. Restoration Lab</button>
-      <button class="nav-btn" data-tab="benchmark" onclick="setTab('benchmark', this)">4. Benchmark Arena</button>
-      <button class="nav-btn" data-tab="experiments" onclick="setTab('experiments', this)">5. Experiments</button>
-    </div>
-
-    <div class="header-actions">
-      <button class="btn btn-primary" onclick="exportReport('markdown')">Export Markdown</button>
+    <!-- Second Action Row -->
+    <div class="header-bottom">
+      <button class="btn" onclick="exportReport('markdown')">Export Markdown</button>
       <button class="btn" onclick="exportReport('csv')">Export CSV</button>
-      <button class="btn btn-success" onclick="saveActiveExperiment()">Save Experiment</button>
+      <button class="btn btn-olive" onclick="saveActiveExperiment()">Save Experiment</button>
     </div>
   </header>
 
-  <!-- CONTAINER -->
+  <!-- ========================================================================
+       MAIN APPLICATION WORKSPACE
+       ======================================================================== -->
   <div class="container">
 
-    <!-- LEFT SIDEBAR -->
+    <!-- LEFT SIDEBAR (~24%) -->
     <div class="sidebar">
 
-      <!-- DUAL INPUT -->
+      <!-- CARD 1: DUAL IMAGE INPUT -->
       <div class="card">
         <div class="card-header">
-          <span class="card-title">Dual Image Input</span>
-          <span id="img-dim-badge" style="font-size: 10px; color: var(--accent); font-family: 'JetBrains Mono', monospace;">256 × 256</span>
+          <span class="card-title">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/></svg>
+            Dual Image Input
+          </span>
+          <span class="card-badge" id="img-dim-badge">256 × 256</span>
         </div>
+
         <div class="drop-grid">
-          <div class="dropzone" onclick="document.getElementById('file-ref').click()">
+          <div class="dropzone" onclick="document.getElementById('file-ref').click()" id="dz-ref">
             <input type="file" id="file-ref" style="display: none;" accept="image/*" onchange="handleFile(event, 'ref')">
-            <div style="font-size: 18px; margin-bottom: 2px;">🖼️</div>
+            <div class="dz-icon">🖼️</div>
             <div class="dz-title">Reference</div>
             <div class="dz-sub">Ground Truth</div>
           </div>
-          <div class="dropzone" onclick="document.getElementById('file-dist').click()">
+          <div class="dropzone" onclick="document.getElementById('file-dist').click()" id="dz-dist">
             <input type="file" id="file-dist" style="display: none;" accept="image/*" onchange="handleFile(event, 'dist')">
-            <div style="font-size: 18px; margin-bottom: 2px;">⚡</div>
+            <div class="dz-icon">⚡</div>
             <div class="dz-title">Distorted</div>
             <div class="dz-sub">Test Image</div>
           </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
           <button class="btn" style="justify-content: center;" onclick="loadPattern('einstein')">Einstein Face</button>
           <button class="btn" style="justify-content: center;" onclick="loadPattern('zone')">Zone Plate</button>
         </div>
       </div>
 
-      <!-- DISTORTION LABORATORY -->
+      <!-- CARD 2: DISTORTION LABORATORY -->
       <div class="card">
         <div class="card-header">
-          <span class="card-title">Distortion Laboratory</span>
+          <span class="card-title">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2v20M2 12h20"/></svg>
+            Distortion Laboratory
+          </span>
         </div>
 
-        <!-- EQUAL-MSE BENCHMARK -->
-        <div style="margin-bottom: 14px;">
-          <div style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px;">Equal-MSE Benchmark (MSE ≈ 144)</div>
-          <div class="preset-list">
-            <div class="preset-item active" data-preset="original" onclick="loadBenchmarkPreset('original', this)">
-              <span>1. Reference (Self)</span>
-              <span class="preset-sub">MSE=0 | SSIM=1.000</span>
-            </div>
-            <div class="preset-item" data-preset="meanshift" onclick="loadBenchmarkPreset('meanshift', this)">
-              <span>2. Mean Shift (+12 DC)</span>
-              <span class="preset-sub">MSE≈144 | SSIM≈0.988</span>
-            </div>
-            <div class="preset-item" data-preset="contrast" onclick="loadBenchmarkPreset('contrast', this)">
-              <span>3. Contrast Reduction</span>
-              <span class="preset-sub">MSE≈144 | SSIM≈0.913</span>
-            </div>
-            <div class="preset-item" data-preset="impulse" onclick="loadBenchmarkPreset('impulse', this)">
-              <span>4. Impulse (Salt & Pepper)</span>
-              <span class="preset-sub">MSE≈144 | SSIM≈0.840</span>
-            </div>
-            <div class="preset-item" data-preset="blur" onclick="loadBenchmarkPreset('blur', this)">
-              <span>5. Gaussian Blur</span>
-              <span class="preset-sub">MSE≈144 | SSIM≈0.694</span>
-            </div>
-            <div class="preset-item" data-preset="jpeg" onclick="loadBenchmarkPreset('jpeg', this)">
-              <span>6. Real JPEG (Q=12 DCT)</span>
-              <span class="preset-sub">MSE≈142 | SSIM≈0.662</span>
-            </div>
+        <!-- Equal-MSE Presets -->
+        <div class="preset-list">
+          <div class="preset-item active" data-preset="original" onclick="loadBenchmarkPreset('original', this)">
+            <span>1. Reference (Self)</span>
+            <span class="preset-sub">MSE=0 | SSIM=1.000</span>
+          </div>
+          <div class="preset-item" data-preset="meanshift" onclick="loadBenchmarkPreset('meanshift', this)">
+            <span>2. Mean Shift (+12 DC)</span>
+            <span class="preset-sub">MSE≈144 | SSIM≈0.988</span>
+          </div>
+          <div class="preset-item" data-preset="contrast" onclick="loadBenchmarkPreset('contrast', this)">
+            <span>3. Contrast Reduction</span>
+            <span class="preset-sub">MSE≈144 | SSIM≈0.913</span>
+          </div>
+          <div class="preset-item" data-preset="impulse" onclick="loadBenchmarkPreset('impulse', this)">
+            <span>4. Impulse Noise (Salt & Pepper)</span>
+            <span class="preset-sub">MSE≈144 | SSIM≈0.840</span>
+          </div>
+          <div class="preset-item" data-preset="blur" onclick="loadBenchmarkPreset('blur', this)">
+            <span>5. Gaussian Blur</span>
+            <span class="preset-sub">MSE≈144 | SSIM≈0.694</span>
+          </div>
+          <div class="preset-item" data-preset="jpeg" onclick="loadBenchmarkPreset('jpeg', this)">
+            <span>6. Real JPEG (Q=12 DCT)</span>
+            <span class="preset-sub">MSE≈142 | SSIM≈0.662</span>
           </div>
         </div>
 
-        <!-- REAL PARAMETRIC CONTROLS -->
-        <div style="border-top: 1px solid var(--border); padding-top: 12px;">
-          <div style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 10px;">Executable Parametric Controls</div>
+        <!-- Executable Parametric Controls -->
+        <div style="border-top: 1px solid var(--surface-secondary); padding-top: 12px;">
+          <div style="font-size: 10px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 10px; letter-spacing: 0.08em;">
+            Executable Parametric Controls
+          </div>
 
           <div class="control-row">
             <div class="control-label">
@@ -269,18 +944,18 @@
 
           <div class="control-row">
             <div class="control-label">
-              <span>Real JPEG Quality (DCT Q-Table)</span>
-              <span class="control-val" id="val-jpeg">100 (No Loss)</span>
+              <span>JPEG Quality (Q)</span>
+              <span class="control-val" id="val-jpeg">100</span>
             </div>
             <input type="range" id="sl-jpeg" min="5" max="100" step="5" value="100"
-              oninput="document.getElementById('val-jpeg').textContent = (this.value == 100) ? '100 (No Loss)' : 'Q=' + this.value; debounceDistortion('jpeg', {quality: this.value})">
+              oninput="document.getElementById('val-jpeg').textContent = this.value; debounceDistortion('jpeg', {quality: this.value})">
           </div>
 
           <div class="control-row">
             <div class="control-label">
               <span>Reproducibility Seed</span>
             </div>
-            <input type="number" id="input-seed" placeholder="Optional Seed (e.g. 42)" value="42">
+            <input type="number" id="input-seed" value="42">
           </div>
         </div>
 
@@ -288,143 +963,334 @@
 
     </div>
 
-    <!-- MAIN WORKSPACE -->
-    <div class="main-panel">
+    <!-- RIGHT MAIN WORKSPACE (~76%) -->
+    <div class="main-workspace">
 
-      <!-- TELEMETRY METRIC HUD -->
+      <!-- TOP 5 METRIC CARDS -->
       <div class="metrics-grid">
-        <div class="metric-box hero">
-          <div class="m-label">Mean SSIM</div>
-          <div class="m-val val-ssim" id="hud-ssim">1.0000</div>
-          <div class="m-sub" id="hud-qoe">Excellent (Max 1.0)</div>
+        <!-- 1. Mean SSIM -->
+        <div class="metric-card" onclick="openMetricModal('ssim')">
+          <div class="m-hdr">
+            <span class="m-icon">🗎</span>
+            <span class="m-label">Mean SSIM</span>
+          </div>
+          <div class="m-value" id="hud-ssim" style="color: var(--metric-ssim);">1.0000</div>
+          <div class="m-sub" id="hud-qoe">🍃 Excellent (Imperceptible)</div>
         </div>
-        <div class="metric-box">
-          <div class="m-label">Multi-Scale SSIM</div>
-          <div class="m-val" style="color: var(--accent);" id="hud-msssim">1.0000</div>
-          <div class="m-sub">5 Scale Pyramids</div>
+
+        <!-- 2. Multi-Scale SSIM -->
+        <div class="metric-card" onclick="openMetricModal('msssim')">
+          <div class="m-hdr">
+            <span class="m-icon">🗂️</span>
+            <span class="m-label">Multi-Scale SSIM</span>
+          </div>
+          <div class="m-value" id="hud-msssim" style="color: var(--metric-ms-ssim);">1.0000</div>
+          <div class="m-sub">⚙ 5 Scale Pyramids</div>
         </div>
-        <div class="metric-box">
-          <div class="m-label">Peak SNR (PSNR)</div>
-          <div class="m-val" style="color: #93C5FD;" id="hud-psnr">∞ dB</div>
-          <div class="m-sub">Logarithmic Fidelity</div>
+
+        <!-- 3. PSNR -->
+        <div class="metric-card" onclick="openMetricModal('psnr')">
+          <div class="m-hdr">
+            <span class="m-icon">📈</span>
+            <span class="m-label">PSNR</span>
+          </div>
+          <div class="m-value" id="hud-psnr" style="color: var(--metric-psnr);">∞ dB</div>
+          <div class="m-sub">☉ Logarithmic Fidelity</div>
         </div>
-        <div class="metric-box">
-          <div class="m-label">Pixel MSE / MAE</div>
-          <div class="m-val" style="color: #F87171;" id="hud-mse">0.00</div>
-          <div class="m-sub" id="hud-mae">MAE: 0.00</div>
+
+        <!-- 4. MSE / MAE -->
+        <div class="metric-card" onclick="openMetricModal('mse')">
+          <div class="m-hdr">
+            <span class="m-icon">⠿</span>
+            <span class="m-label">MSE / MAE</span>
+          </div>
+          <div class="m-value" id="hud-mse" style="color: var(--metric-error); font-size: 22px;">0.00 / 0.00</div>
+          <div class="m-sub">Total Pixel Deviation</div>
         </div>
-        <div class="metric-box">
-          <div class="m-label">Perceptual Dist</div>
-          <div class="m-val" style="color: #FCD34D;" id="hud-perceptual">0.0000</div>
-          <div class="m-sub">Sobel Multi-Scale</div>
+
+        <!-- 5. LPIPS (Perceptual) -->
+        <div class="metric-card" onclick="openMetricModal('lpips')">
+          <div class="m-hdr">
+            <span class="m-icon">👁️</span>
+            <span class="m-label">LPIPS (Perceptual)</span>
+          </div>
+          <div class="m-value" id="hud-lpips" style="color: var(--metric-lpips);">0.0000</div>
+          <div class="m-sub">☉ Sobel Multi-Scale</div>
         </div>
       </div>
 
-      <!-- TAB 1: COMPARISON STUDIO -->
+      <!-- MAIN TAB 1: COMPARISON STUDIO -->
       <div id="tab-comparison" class="tab-pane">
-        <div class="view-toolbar">
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <span>VIEW:</span>
-            <div style="display: inline-flex; gap: 2px; background: var(--bg); padding: 2px; border-radius: 6px; border: 1px solid var(--border);">
-              <button class="btn" id="vm-split" style="padding: 3px 8px; font-size: 10px; background: var(--card-bg);" onclick="setViewMode('split')">⟷ Split Slider</button>
-              <button class="btn" id="vm-side" style="padding: 3px 8px; font-size: 10px;" onclick="setViewMode('side')">⧉ Side-by-Side</button>
-              <button class="btn" id="vm-toggle" style="padding: 3px 8px; font-size: 10px;" onclick="setViewMode('toggle')">⇄ A/B Toggle</button>
+        
+        <!-- IMAGE COMPARISON VIEWER -->
+        <div class="viewer-card">
+          <div class="view-toolbar">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span style="font-weight: 700; color: var(--text-secondary);">View:</span>
+              <div class="view-mode-pill">
+                <button class="vm-btn active" id="vm-split" onclick="setViewMode('split')">Split Slider</button>
+                <button class="vm-btn" id="vm-side" onclick="setViewMode('side')">Side-by-Side</button>
+                <button class="vm-btn" id="vm-toggle" onclick="setViewMode('toggle')">A/B Toggle</button>
+              </div>
+              <span style="color: var(--text-muted); font-size: 11px;">(Wheel: zoom · Drag: pan)</span>
             </div>
-            <span style="color: var(--text-muted); font-size: 10px;">(Wheel: zoom · Drag: pan)</span>
+
+            <div style="display: flex; gap: 8px;">
+              <button class="btn" style="padding: 4px 10px; font-size: 11px;" onclick="resetZoom()">Reset View (1:1)</button>
+              <button class="btn" style="padding: 4px 10px; font-size: 11px;" id="btn-roi" onclick="toggleRoiMode()">Draw ROI Box</button>
+              <button class="btn" style="padding: 4px 10px; font-size: 11px;" onclick="downloadComparison()">Download PNG</button>
+            </div>
           </div>
-          <div style="display: flex; gap: 8px;">
-            <button class="btn" style="padding: 3px 8px; font-size: 10px;" onclick="resetZoom()">Reset View (1:1)</button>
-            <button class="btn" style="padding: 3px 8px; font-size: 10px;" id="btn-roi" onclick="toggleRoiMode()">Draw ROI Box</button>
-            <button class="btn" style="padding: 3px 8px; font-size: 10px;" onclick="downloadComparison()">Download PNG</button>
+
+          <!-- Large Viewport -->
+          <div class="split-viewport" id="viewport">
+            <div class="canvas-container" id="canvas-container">
+              <img class="view-img" id="img-ref" alt="Reference">
+              <img class="view-img dist" id="img-dist" alt="Distorted">
+              <canvas id="roi-canvas"></canvas>
+            </div>
+            <div class="split-divider" id="divider">
+              <div class="split-handle">&lt; &gt;</div>
+            </div>
+            <span class="view-badge badge-ref" id="badge-ref">REFERENCE</span>
+            <span class="view-badge badge-dist" id="badge-dist">DISTORTED</span>
+          </div>
+
+          <!-- ROI Coordinates Bar -->
+          <div id="roi-feedback" style="display: none; background: var(--surface-secondary); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; font-size: 11px; font-family: 'JetBrains Mono', monospace; margin-top: 12px;">
+            <span style="color: var(--primary-dark); font-weight: bold;">Selected Region-of-Interest (ROI):</span> 
+            <span id="roi-coords">None</span> | 
+            <span style="color: var(--metric-ssim); font-weight: bold;">Regional SSIM:</span> 
+            <span id="roi-ssim-val">N/A</span>
+            <button class="btn" style="margin-left: 12px; padding: 2px 8px; font-size: 10px;" onclick="clearRoi()">Clear ROI</button>
           </div>
         </div>
 
-        <div class="split-viewport" id="viewport">
-          <div class="canvas-container" id="canvas-container">
-            <img class="view-img" id="img-ref" alt="Reference">
-            <img class="view-img dist" id="img-dist" alt="Distorted">
-            <canvas id="roi-canvas"></canvas>
+        <!-- BOTTOM DUAL CARDS: STRUCTURAL ANALYSIS PANEL (~75%) & QUICK ACTIONS (~25%) -->
+        <div class="bottom-grid">
+          
+          <!-- STRUCTURAL ANALYSIS PANEL -->
+          <div class="card" style="margin-bottom: 0;">
+            <!-- Analysis Sub-Tabs -->
+            <div class="analysis-tabs">
+              <button class="atab-btn active" data-atab="structural" onclick="setAnalysisTab('structural', this)">
+                <span>📊</span> Structural Analysis
+              </button>
+              <button class="atab-btn" data-atab="difference" onclick="setAnalysisTab('difference', this)">
+                <span>✢</span> Difference
+              </button>
+              <button class="atab-btn" data-atab="errormap" onclick="setAnalysisTab('errormap', this)">
+                <span>⊙</span> Error Map
+              </button>
+              <button class="atab-btn" data-atab="edges" onclick="setAnalysisTab('edges', this)">
+                <span>◩</span> Edges
+              </button>
+              <button class="atab-btn" data-atab="roi" onclick="setAnalysisTab('roi', this)">
+                <span>⬚</span> ROI Analysis
+              </button>
+            </div>
+
+            <!-- TAB PANE: STRUCTURAL ANALYSIS (SSIM Heatmap, Difference Map, Error Distribution) -->
+            <div id="atab-pane-structural" class="analysis-trio-grid">
+              
+              <!-- 1. SSIM Heatmap with vertical color bar legend -->
+              <div class="trio-card">
+                <div class="trio-title">
+                  SSIM Heatmap <span style="font-size: 10px; color: var(--text-muted);">ⓘ</span>
+                </div>
+                <div class="trio-content-row">
+                  <img class="trio-img" id="hm-ssim" alt="SSIM Heatmap">
+                  <div class="legend-bar-container">
+                    <span>1.0</span>
+                    <div class="legend-bar jet"></div>
+                    <span>0.0</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 2. Difference Map with grayscale bar legend -->
+              <div class="trio-card">
+                <div class="trio-title">
+                  Difference Map
+                </div>
+                <div class="trio-content-row">
+                  <img class="trio-img" id="hm-error" alt="Difference Map">
+                  <div class="legend-bar-container">
+                    <span>1.0</span>
+                    <div class="legend-bar gray"></div>
+                    <span>0.0</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 3. Error Distribution Dynamic Chart -->
+              <div class="trio-card">
+                <div class="trio-title">
+                  Error Distribution <span style="font-size: 10px; color: var(--text-muted);">ⓘ</span>
+                </div>
+                <div style="position: relative; width: 100%; height: 140px;">
+                  <canvas id="canvas-error-dist" width="220" height="140" style="width: 100%; height: 140px;"></canvas>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- TAB PANE: DIFFERENCE MAP FULL -->
+            <div id="atab-pane-difference" style="display: none;">
+              <div style="display: flex; gap: 14px; align-items: center; margin-bottom: 10px;">
+                <span style="font-size: 12px; font-weight: 600;">Normalized Absolute Difference |I₁ - I₂|</span>
+              </div>
+              <img id="hm-diff-full" style="width: 100%; height: 260px; object-fit: contain; background: #000; border-radius: 8px;">
+            </div>
+
+            <!-- TAB PANE: ERROR MAP FULL -->
+            <div id="atab-pane-errormap" style="display: none;">
+              <div style="font-size: 12px; font-weight: 600; margin-bottom: 10px;">Severe Degradation Mask (SSIM &lt; 0.80)</div>
+              <img id="hm-mask-full" style="width: 100%; height: 260px; object-fit: contain; background: #000; border-radius: 8px;">
+            </div>
+
+            <!-- TAB PANE: EDGES (SOBEL) -->
+            <div id="atab-pane-edges" style="display: none;">
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+                <div>
+                  <div style="font-size: 11px; font-weight: 700; margin-bottom: 4px;">Reference Edges</div>
+                  <img id="hm-edge-ref" style="width: 100%; height: 160px; object-fit: contain; background: #000; border-radius: 6px;">
+                </div>
+                <div>
+                  <div style="font-size: 11px; font-weight: 700; margin-bottom: 4px;">Distorted Edges</div>
+                  <img id="hm-edge-dist" style="width: 100%; height: 160px; object-fit: contain; background: #000; border-radius: 6px;">
+                </div>
+                <div>
+                  <div style="font-size: 11px; font-weight: 700; margin-bottom: 4px;">Edge Discrepancy</div>
+                  <img id="hm-edge-diff" style="width: 100%; height: 160px; object-fit: contain; background: #000; border-radius: 6px;">
+                </div>
+              </div>
+            </div>
+
+            <!-- TAB PANE: ROI ANALYSIS -->
+            <div id="atab-pane-roi" style="display: none;">
+              <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 8px;">
+                Click "Draw ROI Box" in the toolbar above and drag a bounding box on the image to view regional quality analytics.
+              </div>
+              <table class="b-table">
+                <thead>
+                  <tr>
+                    <th>Region Scope</th>
+                    <th>SSIM</th>
+                    <th>PSNR</th>
+                    <th>Pixel MSE</th>
+                    <th>Area</th>
+                  </tr>
+                </thead>
+                <tbody id="roi-tbody">
+                  <tr>
+                    <td><strong>Full Image (Global)</strong></td>
+                    <td id="roi-global-ssim">-</td>
+                    <td id="roi-global-psnr">-</td>
+                    <td id="roi-global-mse">-</td>
+                    <td id="roi-global-dim">100%</td>
+                  </tr>
+                  <tr>
+                    <td><strong style="color: var(--primary-dark);">Selected ROI</strong></td>
+                    <td id="roi-sub-ssim" style="font-weight: bold; color: var(--metric-ssim);">-</td>
+                    <td id="roi-sub-psnr">-</td>
+                    <td id="roi-sub-mse">-</td>
+                    <td id="roi-sub-dim">-</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
           </div>
-          <div class="split-divider" id="divider">
-            <div class="split-handle">⟷</div>
+
+          <!-- QUICK ACTIONS CARD -->
+          <div class="card" style="margin-bottom: 0;">
+            <div class="card-header">
+              <span class="card-title">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                Quick Actions
+              </span>
+            </div>
+
+            <div class="quick-actions-list">
+              <button class="qa-btn" onclick="setNavTab('restoration')">
+                <span class="qa-icon">🪄</span>
+                <span>Run Restoration</span>
+              </button>
+              <button class="qa-btn" onclick="executeFullBenchmark()">
+                <span class="qa-icon">📊</span>
+                <span>Benchmark All</span>
+              </button>
+              <button class="qa-btn" onclick="saveActiveExperiment()">
+                <span class="qa-icon">🔖</span>
+                <span>Save Experiment</span>
+              </button>
+              <button class="qa-btn" onclick="exportReport('pdf')">
+                <span class="qa-icon">📄</span>
+                <span>Export Report (PDF)</span>
+              </button>
+            </div>
           </div>
-          <span class="view-badge badge-ref" id="badge-ref">Reference (Left)</span>
-          <span class="view-badge badge-dist" id="badge-dist">Distorted (Right)</span>
+
         </div>
 
-        <!-- REGIONAL ROI FEEDBACK -->
-        <div id="roi-feedback" style="display: none; background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; font-size: 11px; font-family: 'JetBrains Mono', monospace; margin-bottom: 18px;">
-          <span style="color: var(--accent); font-weight: bold;">Selected Region-of-Interest (ROI):</span> 
-          <span id="roi-coords">None</span> | 
-          <span style="color: var(--success); font-weight: bold;">Regional SSIM:</span> 
-          <span id="roi-ssim-val">N/A</span>
-          <button class="btn" style="margin-left: 12px; padding: 2px 8px; font-size: 10px;" onclick="clearRoi()">Clear ROI</button>
-        </div>
       </div>
 
-      <!-- TAB 2: STRUCTURAL HEATMAPS -->
+      <!-- MAIN TAB 2: STRUCTURAL HEATMAPS -->
       <div id="tab-heatmaps" class="tab-pane" style="display: none;">
         <div class="card">
           <div class="card-header">
-            <span class="card-title">Real Computed Heatmaps (PyTorch 2D Tensors)</span>
+            <span class="card-title">Structural Heatmaps &amp; Severe Degradation Analysis</span>
             <div style="display: flex; gap: 12px; align-items: center;">
-              <span style="font-size: 11px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace;">Severity Threshold: <b id="lbl-thresh" style="color: var(--danger);">0.80</b></span>
-              <input type="range" id="sl-thresh" min="0.5" max="0.98" step="0.02" value="0.80" style="width: 120px;" onchange="updateAnalysis()">
+              <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">
+                Severity Threshold: <b id="lbl-thresh" style="color: var(--danger);">0.80</b>
+              </span>
+              <input type="range" id="sl-thresh" min="0.5" max="0.98" step="0.02" value="0.80" style="width: 140px;" onchange="updateAnalysis()">
             </div>
           </div>
-          <div class="heatmap-grid">
-            <div class="heatmap-card">
-              <div class="heatmap-hdr">
-                <span>1. Local SSIM Map (Jet)</span>
-                <span style="color: var(--success);">Perceptual Quality</span>
-              </div>
-              <img class="heatmap-img" id="hm-ssim" alt="Local SSIM Map">
+          <div class="analysis-trio-grid" style="grid-template-columns: 1fr 1fr; gap: 18px;">
+            <div class="trio-card" style="padding: 14px;">
+              <div class="trio-title">Local SSIM Map (Jet)</div>
+              <img id="full-hm-ssim" style="width: 100%; height: 320px; object-fit: contain; background: #000; border-radius: 8px;">
             </div>
-            <div class="heatmap-card">
-              <div class="heatmap-hdr">
-                <span>2. Absolute Error |I₁ - I₂|</span>
-                <span style="color: var(--danger);">Pixel Loss (Hot)</span>
-              </div>
-              <img class="heatmap-img" id="hm-error" alt="Absolute Error Map">
-            </div>
-            <div class="heatmap-card">
-              <div class="heatmap-hdr">
-                <span>3. Severe Structural Loss</span>
-                <span style="color: var(--danger);">SSIM &lt; 0.80 Mask</span>
-              </div>
-              <img class="heatmap-img" id="hm-mask" alt="Threshold Mask">
+            <div class="trio-card" style="padding: 14px;">
+              <div class="trio-title">Severe Degradation Mask (SSIM &lt; Threshold)</div>
+              <img id="full-hm-mask" style="width: 100%; height: 320px; object-fit: contain; background: #000; border-radius: 8px;">
             </div>
           </div>
         </div>
       </div>
 
-      <!-- TAB 3: RESTORATION LAB -->
+      <!-- MAIN TAB 3: RESTORATION LAB -->
       <div id="tab-restoration" class="tab-pane" style="display: none;">
         <div class="card">
           <div class="card-header">
             <span class="card-title">Image Restoration Laboratory</span>
-            <span style="font-size: 11px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace;">Quantify Metric Recovery (Δ SSIM)</span>
+            <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">Quantify Metric Recovery (Δ SSIM)</span>
           </div>
-          <div id="restore-btns" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 14px;">
-            <button class="btn" onclick="executeRestoration('median', this)">Median Filter</button>
-            <button class="btn" onclick="executeRestoration('gaussian', this)">Gaussian Filter</button>
-            <button class="btn" onclick="executeRestoration('bilateral', this)">Bilateral Filter</button>
-            <button class="btn" onclick="executeRestoration('nlm', this)">Non-Local Means</button>
-            <button class="btn" onclick="executeRestoration('unsharp', this)">Unsharp Mask</button>
+          <div id="restore-btns" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 16px;">
+            <button class="btn" style="justify-content: center;" onclick="executeRestoration('median', this)">Median Filter</button>
+            <button class="btn" style="justify-content: center;" onclick="executeRestoration('gaussian', this)">Gaussian Filter</button>
+            <button class="btn" style="justify-content: center;" onclick="executeRestoration('bilateral', this)">Bilateral Filter</button>
+            <button class="btn" style="justify-content: center;" onclick="executeRestoration('nlm', this)">Non-Local Means</button>
+            <button class="btn" style="justify-content: center;" onclick="executeRestoration('unsharp', this)">Unsharp Mask</button>
           </div>
 
-          <div style="background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 14px; font-size: 12px; font-family: 'JetBrains Mono', monospace;" id="restore-info">
+          <div style="background: var(--surface-secondary); border: 1px solid var(--border); border-radius: 10px; padding: 16px; font-size: 12px; font-family: 'JetBrains Mono', monospace;" id="restore-info">
             Click any restoration algorithm above to execute the real PyTorch kernel and measure quality recovery.
           </div>
         </div>
       </div>
 
-      <!-- TAB 4: BENCHMARK ARENA -->
+      <!-- MAIN TAB 4: BENCHMARK ARENA -->
       <div id="tab-benchmark" class="tab-pane" style="display: none;">
         <div class="card">
           <div class="card-header">
             <span class="card-title">Empirical Benchmark Arena</span>
-            <button class="btn btn-primary" id="btn-run-benchmark" onclick="executeFullBenchmark()">Run Full Benchmark</button>
+            <div style="display: flex; gap: 8px;">
+              <button class="btn btn-olive" id="btn-run-benchmark" onclick="executeFullBenchmark()">Run Full Benchmark</button>
+              <button class="btn" onclick="exportReport('csv')">Export CSV</button>
+            </div>
           </div>
           <table class="b-table">
             <thead>
@@ -441,7 +1307,7 @@
             </thead>
             <tbody id="b-tbody">
               <tr>
-                <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 20px;">
+                <td colspan="8" style="text-align: center; color: var(--text-secondary); padding: 24px;">
                   Click "Run Full Benchmark" to execute all restoration filters against the current distorted image.
                 </td>
               </tr>
@@ -450,15 +1316,18 @@
         </div>
       </div>
 
-      <!-- TAB 5: EXPERIMENTS -->
+      <!-- MAIN TAB 5: EXPERIMENTS -->
       <div id="tab-experiments" class="tab-pane" style="display: none;">
         <div class="card">
           <div class="card-header">
-            <span class="card-title">Experiment Management & History</span>
-            <button class="btn" onclick="loadExperimentList()">Refresh History</button>
+            <span class="card-title">Experiment Management &amp; History</span>
+            <div style="display: flex; gap: 8px;">
+              <input type="text" id="exp-search" placeholder="Search experiments..." style="padding: 4px 10px; font-size: 11px; width: 180px;" oninput="filterExperiments()">
+              <button class="btn" onclick="loadExperimentList()">Refresh History</button>
+            </div>
           </div>
           <div id="exp-container" style="display: flex; flex-direction: column; gap: 8px;">
-            <div style="color: var(--text-muted); font-size: 12px; padding: 14px; text-align: center;">No experiments recorded yet. Click "Save Experiment" in the top bar to record runs.</div>
+            <div style="color: var(--text-secondary); font-size: 12px; padding: 20px; text-align: center;">No experiments recorded yet. Click "Save Experiment" in the top bar to record runs.</div>
           </div>
         </div>
       </div>
@@ -467,35 +1336,58 @@
 
   </div>
 
-  <!-- STATUS FOOTER -->
+  <!-- ========================================================================
+       METRIC EXPLANATION MODAL (Clicking Metric Cards)
+       ======================================================================== -->
+  <div class="modal-backdrop" id="metric-modal" onclick="closeMetricModal(event)">
+    <div class="modal-card" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title" id="mmodal-title">Metric Specification</div>
+        <button class="modal-close" onclick="closeMetricModal()">&times;</button>
+      </div>
+      <div id="mmodal-body" style="font-size: 13px; line-height: 1.6; color: var(--text-primary);">
+        <!-- Injected via JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       FOOTER
+       ======================================================================== -->
   <footer class="status-bar">
     <div class="status-indicator">
       <div class="status-dot" id="status-dot"></div>
       <span id="status-text">Ready · PyTorch Engine Connected</span>
     </div>
     <div>
-      SSIM LAB v1.0.0 · Academic Quality Assessment Platform
+      AstraVision SSIM Lab v1.0.0 · Academic Quality Assessment Platform
     </div>
   </footer>
 
+  <!-- ========================================================================
+       CLIENT APPLICATION LOGIC
+       ======================================================================== -->
   <script>
     let currentWidth = 256, currentHeight = 256;
     let currentRefBase64 = null;
     let currentDistBase64 = null;
     let currentMetrics = {};
     let latestBenchmarks = [];
+    let savedExperimentsList = [];
     let isRoiMode = false;
     let activeRoi = null;
     let roiStart = null;
     let currentViewMode = 'split'; // 'split', 'side', 'toggle'
-    let toggleState = false; // false = ref, true = dist
+    let toggleState = false;
     let debounceTimer = null;
 
     // Pan & Zoom State
     let zoomLevel = 1.0, panX = 0, panY = 0;
     let isPanning = false, startPanX = 0, startPanY = 0;
 
-    // Synthetic Einstein Portrait
+    // =========================================================================
+    // 1. SYNTHETIC PATTERNS (Einstein & Zone Plate)
+    // =========================================================================
     function createSyntheticEinstein() {
       const W = 256, H = 256;
       currentWidth = W; currentHeight = H;
@@ -551,8 +1443,10 @@
       return c.toDataURL("image/png");
     }
 
-    // Set Active Tab
-    function setTab(name, element = null) {
+    // =========================================================================
+    // 2. NAVIGATION & TABS
+    // =========================================================================
+    function setNavTab(name, element = null) {
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
       document.querySelectorAll('.tab-pane').forEach(p => p.style.display = 'none');
       const targetBtn = element || document.querySelector(`[data-tab="${name}"]`);
@@ -562,15 +1456,51 @@
       if (name === 'experiments') loadExperimentList();
     }
 
+    function setAnalysisTab(name, element = null) {
+      document.querySelectorAll('.atab-btn').forEach(b => b.classList.remove('active'));
+      if (element) element.classList.add('active');
+      
+      const paneIds = ['structural', 'difference', 'errormap', 'edges', 'roi'];
+      paneIds.forEach(id => {
+        const pane = document.getElementById('atab-pane-' + id);
+        if (pane) pane.style.display = (id === name) ? (id === 'structural' ? 'grid' : 'block') : 'none';
+      });
+    }
+
     function setStatus(text, isBusy = false) {
       document.getElementById('status-text').textContent = text;
       document.getElementById('status-dot').className = isBusy ? "status-dot busy" : "status-dot";
     }
 
-    // Image Upload Handling
+    // =========================================================================
+    // 3. FILE UPLOADS & DRAG AND DROP
+    // =========================================================================
+    function setupDragAndDrop() {
+      ['dz-ref', 'dz-dist'].forEach(id => {
+        const el = document.getElementById(id);
+        const type = id === 'dz-ref' ? 'ref' : 'dist';
+        el.addEventListener('dragover', (e) => { e.preventDefault(); el.style.borderColor = 'var(--primary)'; });
+        el.addEventListener('dragleave', () => { el.style.borderColor = 'var(--border-strong)'; });
+        el.addEventListener('drop', (e) => {
+          e.preventDefault();
+          el.style.borderColor = 'var(--border-strong)';
+          if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+            processUploadedFile(e.dataTransfer.files[0], type);
+          }
+        });
+      });
+    }
+
     function handleFile(e, type) {
       const file = e.target.files[0];
-      if (!file) return;
+      if (file) processUploadedFile(file, type);
+    }
+
+    function processUploadedFile(file, type) {
+      if (!file.type.startsWith('image/')) {
+        alert("Please upload a valid image file (PNG, JPG, TIFF, WebP).");
+        return;
+      }
       const reader = new FileReader();
       reader.onload = function(evt) {
         const tempImg = new Image();
@@ -603,30 +1533,32 @@
       updateAnalysis();
     }
 
-    // View Mode Switching
+    // =========================================================================
+    // 4. VIEW MODES & ZOOM/PAN
+    // =========================================================================
     function setViewMode(mode) {
       currentViewMode = mode;
       const vp = document.getElementById('viewport');
       vp.classList.remove('mode-side', 'mode-toggle');
-      document.querySelectorAll('.view-mode-btn').forEach(b => b.style.background = 'transparent');
+      document.querySelectorAll('.vm-btn').forEach(b => b.classList.remove('active'));
       
       const btnMap = { 'split': 'vm-split', 'side': 'vm-side', 'toggle': 'vm-toggle' };
       const activeBtn = document.getElementById(btnMap[mode]);
-      if (activeBtn) activeBtn.style.background = 'var(--card-bg)';
+      if (activeBtn) activeBtn.classList.add('active');
 
       if (mode === 'split') {
         divider.style.display = 'block';
         document.getElementById('img-dist').style.opacity = '1';
         document.getElementById('img-dist').style.clipPath = 'polygon(50% 0, 100% 0, 100% 100%, 50% 100%)';
-        document.getElementById('badge-ref').textContent = "Reference (Left)";
-        document.getElementById('badge-dist').textContent = "Distorted (Right)";
+        document.getElementById('badge-ref').textContent = "REFERENCE";
+        document.getElementById('badge-dist').textContent = "DISTORTED";
         document.getElementById('badge-dist').style.display = 'block';
       } else if (mode === 'side') {
         vp.classList.add('mode-side');
         divider.style.display = 'none';
         document.getElementById('img-dist').style.opacity = '1';
-        document.getElementById('badge-ref').textContent = "Reference";
-        document.getElementById('badge-dist').textContent = "Distorted";
+        document.getElementById('badge-ref').textContent = "REFERENCE";
+        document.getElementById('badge-dist').textContent = "DISTORTED";
         document.getElementById('badge-dist').style.display = 'block';
       } else if (mode === 'toggle') {
         vp.classList.add('mode-toggle');
@@ -640,16 +1572,71 @@
       const distImg = document.getElementById('img-dist');
       if (toggleState) {
         distImg.style.opacity = '1';
-        document.getElementById('badge-ref').textContent = "VIEWING: Distorted (Click to flip)";
+        document.getElementById('badge-ref').textContent = "VIEWING: DISTORTED (Click to flip)";
         document.getElementById('badge-dist').style.display = 'none';
       } else {
         distImg.style.opacity = '0';
-        document.getElementById('badge-ref').textContent = "VIEWING: Reference (Click to flip)";
+        document.getElementById('badge-ref').textContent = "VIEWING: REFERENCE (Click to flip)";
         document.getElementById('badge-dist').style.display = 'none';
       }
     }
 
-    // Server-Side Analysis Call
+    // Synchronized Pan & Zoom
+    const viewport = document.getElementById('viewport');
+    viewport.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const zoomFactor = e.deltaY < 0 ? 1.15 : 0.85;
+      zoomLevel = Math.max(0.5, Math.min(6.0, zoomLevel * zoomFactor));
+      applyTransform();
+    });
+
+    viewport.addEventListener('mousedown', (e) => {
+      if (isRoiMode || isSplitDragging) return;
+      if (currentViewMode === 'toggle') {
+        toggleState = !toggleState;
+        renderToggleState();
+        return;
+      }
+      isPanning = true;
+      startPanX = e.clientX - panX;
+      startPanY = e.clientY - panY;
+    });
+
+    window.addEventListener('mouseup', () => isPanning = false);
+    window.addEventListener('mousemove', (e) => {
+      if (!isPanning) return;
+      panX = e.clientX - startPanX;
+      panY = e.clientY - startPanY;
+      applyTransform();
+    });
+
+    function applyTransform() {
+      const container = document.getElementById('canvas-container');
+      container.style.transform = `translate(${panX}px, ${panY}px) scale(${zoomLevel})`;
+    }
+
+    function resetZoom() {
+      zoomLevel = 1.0; panX = 0; panY = 0;
+      applyTransform();
+    }
+
+    // Split Divider Dragging
+    const divider = document.getElementById('divider');
+    let isSplitDragging = false;
+    divider.addEventListener('mousedown', () => isSplitDragging = true);
+    window.addEventListener('mouseup', () => isSplitDragging = false);
+    window.addEventListener('mousemove', (e) => {
+      if (!isSplitDragging || currentViewMode !== 'split') return;
+      const rect = viewport.getBoundingClientRect();
+      let pos = (e.clientX - rect.left) / rect.width;
+      pos = Math.max(0.05, Math.min(0.95, pos));
+      divider.style.left = (pos * 100) + '%';
+      document.getElementById('img-dist').style.clipPath = `polygon(${pos * 100}% 0, 100% 0, 100% 100%, ${pos * 100}% 100%)`;
+    });
+
+    // =========================================================================
+    // 5. SERVER-SIDE ANALYSIS & DYNAMIC HISTOGRAM
+    // =========================================================================
     async function updateAnalysis(roi = activeRoi) {
       setStatus("Computing PyTorch SSIM & Heatmaps...", true);
       const threshold = parseFloat(document.getElementById('sl-thresh').value);
@@ -674,9 +1661,8 @@
         document.getElementById('hud-ssim').textContent = data.metrics.ssim.toFixed(4);
         document.getElementById('hud-msssim').textContent = data.metrics.ms_ssim.toFixed(4);
         document.getElementById('hud-psnr').textContent = data.metrics.psnr_db.toFixed(2) + " dB";
-        document.getElementById('hud-mse').textContent = data.metrics.mse.toFixed(2);
-        document.getElementById('hud-mae').textContent = "MAE: " + data.metrics.mae.toFixed(2);
-        document.getElementById('hud-perceptual').textContent = data.metrics.perceptual_dist.toFixed(4);
+        document.getElementById('hud-mse').textContent = `${data.metrics.mse.toFixed(2)} / ${data.metrics.mae.toFixed(2)}`;
+        document.getElementById('hud-lpips').textContent = data.metrics.perceptual_dist.toFixed(4);
         document.getElementById('hud-qoe').textContent = data.metrics.verdict;
 
         document.getElementById('img-ref').src = currentRefBase64;
@@ -685,13 +1671,27 @@
         if (data.heatmaps) {
           document.getElementById('hm-ssim').src = data.heatmaps.ssim_map;
           document.getElementById('hm-error').src = data.heatmaps.error_map;
-          document.getElementById('hm-mask').src = data.heatmaps.threshold_mask;
+          document.getElementById('full-hm-ssim').src = data.heatmaps.ssim_map;
+          document.getElementById('full-hm-mask').src = data.heatmaps.threshold_mask;
+          document.getElementById('hm-diff-full').src = data.heatmaps.error_map;
+          document.getElementById('hm-mask-full').src = data.heatmaps.threshold_mask;
+          
+          if (data.heatmaps.ref_edges) document.getElementById('hm-edge-ref').src = data.heatmaps.ref_edges;
+          if (data.heatmaps.dist_edges) document.getElementById('hm-edge-dist').src = data.heatmaps.dist_edges;
+          if (data.heatmaps.edge_diff_map) document.getElementById('hm-edge-diff').src = data.heatmaps.edge_diff_map;
+        }
+
+        if (data.histogram) {
+          drawErrorDistribution(data.histogram.counts);
         }
 
         if (data.image_meta) {
           currentWidth = data.image_meta.width;
           currentHeight = data.image_meta.height;
           document.getElementById('img-dim-badge').textContent = `${currentWidth} × ${currentHeight}`;
+          document.getElementById('roi-global-ssim').textContent = data.metrics.ssim.toFixed(4);
+          document.getElementById('roi-global-psnr').textContent = data.metrics.psnr_db.toFixed(2) + " dB";
+          document.getElementById('roi-global-mse').textContent = data.metrics.mse.toFixed(2);
         }
 
         setStatus("Ready · PyTorch Evaluation Complete", false);
@@ -701,7 +1701,79 @@
       }
     }
 
-    // Debounced Distortion Trigger
+    // Draw Live Error Distribution Chart on Canvas
+    function drawErrorDistribution(counts) {
+      const canvas = document.getElementById('canvas-error-dist');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const W = canvas.width;
+      const H = canvas.height;
+      ctx.clearRect(0, 0, W, H);
+
+      const padLeft = 32, padBottom = 20, padTop = 10, padRight = 10;
+      const plotW = W - padLeft - padRight;
+      const plotH = H - padTop - padBottom;
+
+      const maxVal = Math.max(...counts, 20000);
+
+      // Y-axis grid and labels (0, 5K, 10K, 15K, 20K)
+      ctx.font = "9px 'JetBrains Mono', monospace";
+      ctx.fillStyle = "#777568";
+      ctx.textAlign = "right";
+      const yTicks = [0, 5000, 10000, 15000, 20000];
+      yTicks.forEach(tick => {
+        const y = padTop + plotH - (tick / maxVal) * plotH;
+        ctx.fillText(tick === 0 ? "0" : (tick / 1000) + "K", padLeft - 4, y + 3);
+        ctx.strokeStyle = "rgba(227, 222, 211, 0.6)";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(padLeft, y);
+        ctx.lineTo(W - padRight, y);
+        ctx.stroke();
+      });
+
+      // X-axis labels (0.0, 0.2, 0.4, 0.6, 0.8, 1.0)
+      ctx.textAlign = "center";
+      const xTicks = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0];
+      xTicks.forEach(t => {
+        const x = padLeft + t * plotW;
+        ctx.fillText(t.toFixed(1), x, H - 4);
+      });
+
+      // Draw Shaded Distribution Curve
+      ctx.beginPath();
+      ctx.moveTo(padLeft, padTop + plotH);
+      for (let i = 0; i < counts.length; i++) {
+        const x = padLeft + (i / (counts.length - 1)) * plotW;
+        const y = padTop + plotH - (counts[i] / maxVal) * plotH;
+        ctx.lineTo(x, y);
+      }
+      ctx.lineTo(padLeft + plotW, padTop + plotH);
+      ctx.closePath();
+
+      // Shaded Fill
+      const grad = ctx.createLinearGradient(0, padTop, 0, padTop + plotH);
+      grad.addColorStop(0, "rgba(98, 105, 77, 0.45)");
+      grad.addColorStop(1, "rgba(133, 139, 107, 0.1)");
+      ctx.fillStyle = grad;
+      ctx.fill();
+
+      // Outline Stroke
+      ctx.beginPath();
+      for (let i = 0; i < counts.length; i++) {
+        const x = padLeft + (i / (counts.length - 1)) * plotW;
+        const y = padTop + plotH - (counts[i] / maxVal) * plotH;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.strokeStyle = "#62694D";
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    }
+
+    // =========================================================================
+    // 6. DISTORTION PRESETS & SLIDERS
+    // =========================================================================
     function debounceDistortion(type, params) {
       clearTimeout(debounceTimer);
       debounceTimer = setTimeout(() => {
@@ -709,7 +1781,6 @@
       }, 180);
     }
 
-    // Parametric Distortion API Call
     async function triggerDistortion(type, params) {
       setStatus(`Applying real PyTorch distortion: ${type}...`, true);
       try {
@@ -733,7 +1804,6 @@
       }
     }
 
-    // Equal-MSE Benchmark Presets
     function loadBenchmarkPreset(name, element = null) {
       document.querySelectorAll('.preset-item').forEach(el => el.classList.remove('active'));
       const activeEl = element || document.querySelector(`[data-preset="${name}"]`);
@@ -755,10 +1825,12 @@
       }
     }
 
-    // Restoration API Call
+    // =========================================================================
+    // 7. RESTORATION & BENCHMARKS
+    // =========================================================================
     async function executeRestoration(method, btnEl = null) {
-      document.querySelectorAll('#restore-btns .btn').forEach(b => b.classList.remove('btn-primary'));
-      if (btnEl) btnEl.classList.add('btn-primary');
+      document.querySelectorAll('#restore-btns .btn').forEach(b => b.classList.remove('btn-olive'));
+      if (btnEl) btnEl.classList.add('btn-olive');
       setStatus(`Executing PyTorch ${method.toUpperCase()} restoration...`, true);
       try {
         const res = await fetch("/api/restore", {
@@ -781,15 +1853,15 @@
         const deltaSign = delta >= 0 ? '+' : '';
         document.getElementById('restore-info').innerHTML = `
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <strong style="color: #fff; font-size: 13px;">Algorithm: ${method.toUpperCase()}</strong>
-            <span style="color: var(--text-muted);">Runtime: <code style="color: #fff;">${data.runtime_ms} ms</code></span>
+            <strong style="color: var(--text-primary); font-size: 13px;">Algorithm: ${method.toUpperCase()}</strong>
+            <span style="color: var(--text-secondary);">Runtime: <code>${data.runtime_ms} ms</code></span>
           </div>
-          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; background: rgba(0,0,0,0.25); padding: 10px; border-radius: 6px; margin-bottom: 8px;">
-            <div>SSIM: <code style="color: var(--success); font-weight: bold;">${data.metrics.ssim.toFixed(4)}</code></div>
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; background: var(--surface); padding: 10px; border-radius: 8px; margin-bottom: 8px; border: 1px solid var(--border);">
+            <div>SSIM: <code style="color: var(--metric-ssim); font-weight: bold;">${data.metrics.ssim.toFixed(4)}</code></div>
             <div>Recovery: <code style="color: ${deltaColor}; font-weight: bold;">${deltaSign}${delta.toFixed(4)}</code></div>
-            <div>PSNR: <code style="color: #93C5FD;">${data.metrics.psnr_db.toFixed(2)} dB</code></div>
+            <div>PSNR: <code style="color: var(--metric-psnr);">${data.metrics.psnr_db.toFixed(2)} dB</code></div>
           </div>
-          <a href="${data.restored_image}" download="restored_${method}.png" class="btn btn-primary" style="display: inline-flex; text-decoration: none; padding: 4px 10px; font-size: 11px;">
+          <a href="${data.restored_image}" download="restored_${method}.png" class="btn btn-olive" style="display: inline-flex; text-decoration: none; padding: 4px 12px; font-size: 11px;">
             ↓ Download Restored PNG
           </a>
         `;
@@ -799,8 +1871,8 @@
       }
     }
 
-    // Full Benchmark Execution
     async function executeFullBenchmark() {
+      setNavTab('benchmark');
       setStatus("Running Full PyTorch Restoration Benchmark Suite...", true);
       const btn = document.getElementById('btn-run-benchmark');
       if (btn) btn.disabled = true;
@@ -845,23 +1917,25 @@
       }
     }
 
-    // Experiment Persistence
+    // =========================================================================
+    // 8. EXPERIMENT MANAGEMENT
+    // =========================================================================
     async function saveActiveExperiment() {
       setStatus("Saving experiment to history...", true);
-      const name = prompt("Enter Experiment Name:", "Parametric Distortion Test") || "Untitled Experiment";
+      const name = prompt("Enter Experiment Name:", "AstraVision Scientific Run") || "Untitled Experiment";
       try {
         const res = await fetch("/api/experiments/save", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             name: name,
-            distortion_type: "Interactive Parametric",
+            distortion_type: "Parametric Studio",
             distortion_params: { blur: document.getElementById('sl-blur').value, noise: document.getElementById('sl-noise').value },
             restoration_method: "Multi-Filter Suite",
             baseline_metrics: currentMetrics,
             restored_metrics: currentMetrics,
             seed: document.getElementById('input-seed').value,
-            image_name: "Benchmark Sample",
+            image_name: "Active Sample",
           }),
         });
         const data = await res.json();
@@ -878,33 +1952,67 @@
       try {
         const res = await fetch("/api/experiments/list", { method: "POST", body: "{}" });
         const data = await res.json();
-        const container = document.getElementById('exp-container');
-        if (!data.experiments || data.experiments.length === 0) {
-          container.innerHTML = '<div style="color: var(--text-muted); font-size: 12px; padding: 14px; text-align: center;">No experiments recorded yet.</div>';
-          return;
-        }
-        container.innerHTML = "";
-        data.experiments.forEach(exp => {
-          container.innerHTML += `
-            <div style="background: var(--surface-2); border: 1px solid var(--border); border-radius: 6px; padding: 10px 14px; font-size: 11px; font-family: 'JetBrains Mono', monospace; display: flex; justify-content: space-between; align-items: center;">
-              <div>
-                <strong>${exp.name}</strong> <span style="color: var(--text-muted);">(${exp.id})</span><br>
-                <span style="color: var(--text-muted);">${exp.timestamp} · Seed: ${exp.seed || 'None'}</span>
-              </div>
-              <div style="text-align: right;">
-                SSIM: <code style="color: var(--success);">${exp.baseline_metrics.ssim || 'N/A'}</code> · 
-                PSNR: <code>${exp.baseline_metrics.psnr_db || 'N/A'} dB</code>
-              </div>
-            </div>
-          `;
-        });
+        savedExperimentsList = data.experiments || [];
+        renderExperiments(savedExperimentsList);
       } catch (err) {
         console.error(err);
       }
     }
 
-    // Export Reports
+    function renderExperiments(list) {
+      const container = document.getElementById('exp-container');
+      if (!list || list.length === 0) {
+        container.innerHTML = '<div style="color: var(--text-secondary); font-size: 12px; padding: 20px; text-align: center;">No experiments recorded yet.</div>';
+        return;
+      }
+      container.innerHTML = "";
+      list.forEach(exp => {
+        container.innerHTML += `
+          <div style="background: var(--surface-secondary); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; font-size: 11.5px; font-family: 'JetBrains Mono', monospace; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <strong style="font-size: 13px; color: var(--text-primary);">${exp.name}</strong> <span style="color: var(--text-muted);">(${exp.id})</span><br>
+              <span style="color: var(--text-secondary);">${exp.timestamp} · Seed: ${exp.seed || 'None'}</span>
+            </div>
+            <div style="display: flex; gap: 14px; align-items: center;">
+              <div>
+                SSIM: <code style="color: var(--metric-ssim); font-weight: bold;">${exp.baseline_metrics.ssim || 'N/A'}</code> · 
+                PSNR: <code>${exp.baseline_metrics.psnr_db || 'N/A'} dB</code>
+              </div>
+              <button class="btn" style="padding: 2px 8px; font-size: 10px; color: var(--danger);" onclick="deleteExperimentById('${exp.id}')">Delete</button>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function filterExperiments() {
+      const q = document.getElementById('exp-search').value.toLowerCase();
+      const filtered = savedExperimentsList.filter(e => e.name.toLowerCase().includes(q) || e.id.toLowerCase().includes(q));
+      renderExperiments(filtered);
+    }
+
+    async function deleteExperimentById(expId) {
+      if (!confirm(`Delete experiment ${expId}?`)) return;
+      try {
+        await fetch("/api/experiments/delete", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: expId }),
+        });
+        loadExperimentList();
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    // =========================================================================
+    // 9. EXPORTS (MARKDOWN, CSV, PRINTABLE PDF)
+    // =========================================================================
     async function exportReport(format) {
+      if (format === 'pdf') {
+        window.print();
+        return;
+      }
       setStatus(`Generating ${format.toUpperCase()} research report...`, true);
       try {
         const res = await fetch("/api/reports/export", {
@@ -936,68 +2044,25 @@
       }
     }
 
-    // Split-Screen Slider Dragging
-    const divider = document.getElementById('divider');
-    const viewport = document.getElementById('viewport');
-    let isSplitDragging = false;
-
-    divider.addEventListener('mousedown', () => isSplitDragging = true);
-    window.addEventListener('mouseup', () => isSplitDragging = false);
-    window.addEventListener('mousemove', (e) => {
-      if (!isSplitDragging || currentViewMode !== 'split') return;
-      const rect = viewport.getBoundingClientRect();
-      let pos = (e.clientX - rect.left) / rect.width;
-      pos = Math.max(0.05, Math.min(0.95, pos));
-      divider.style.left = (pos * 100) + '%';
-      document.getElementById('img-dist').style.clipPath = `polygon(${pos * 100}% 0, 100% 0, 100% 100%, ${pos * 100}% 100%)`;
-    });
-
-    // Synchronized Pan & Zoom
-    viewport.addEventListener('wheel', (e) => {
-      e.preventDefault();
-      const zoomFactor = e.deltaY < 0 ? 1.15 : 0.85;
-      zoomLevel = Math.max(0.5, Math.min(6.0, zoomLevel * zoomFactor));
-      applyTransform();
-    });
-
-    viewport.addEventListener('mousedown', (e) => {
-      if (isRoiMode || isSplitDragging) return;
-      if (currentViewMode === 'toggle') {
-        toggleState = !toggleState;
-        renderToggleState();
-        return;
-      }
-      isPanning = true;
-      startPanX = e.clientX - panX;
-      startPanY = e.clientY - panY;
-    });
-
-    window.addEventListener('mouseup', () => isPanning = false);
-    window.addEventListener('mousemove', (e) => {
-      if (!isPanning) return;
-      panX = e.clientX - startPanX;
-      panY = e.clientY - startPanY;
-      applyTransform();
-    });
-
-    function applyTransform() {
-      const container = document.getElementById('canvas-container');
-      container.style.transform = `translate(${panX}px, ${panY}px) scale(${zoomLevel})`;
+    function downloadComparison() {
+      const a = document.createElement('a');
+      a.href = currentDistBase64;
+      a.download = "astravision_comparison.png";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
     }
 
-    function resetZoom() {
-      zoomLevel = 1.0; panX = 0; panY = 0;
-      applyTransform();
-    }
-
-    // ROI Box Drawing
+    // =========================================================================
+    // 10. LETTERBOX-AWARE ROI DRAWER
+    // =========================================================================
     function toggleRoiMode() {
       isRoiMode = !isRoiMode;
       const btn = document.getElementById('btn-roi');
       const canvas = document.getElementById('roi-canvas');
       if (isRoiMode) {
         btn.textContent = "Cancel ROI";
-        btn.classList.add('btn-primary');
+        btn.classList.add('btn-olive');
         canvas.classList.add('active');
         canvas.width = viewport.clientWidth;
         canvas.height = viewport.clientHeight;
@@ -1013,7 +2078,7 @@
       const btn = document.getElementById('btn-roi');
       const canvas = document.getElementById('roi-canvas');
       btn.textContent = "Draw ROI Box";
-      btn.classList.remove('btn-primary');
+      btn.classList.remove('btn-olive');
       canvas.classList.remove('active');
       const ctx = canvas.getContext('2d');
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -1057,7 +2122,7 @@
         const curX = e.clientX - rect.left;
         const curY = e.clientY - rect.top;
         ctx.clearRect(0, 0, c.width, c.height);
-        ctx.strokeStyle = '#65A9FF';
+        ctx.strokeStyle = '#62694D';
         ctx.lineWidth = 2;
         ctx.setLineDash([4, 4]);
         ctx.strokeRect(roiStart.x, roiStart.y, curX - roiStart.x, curY - roiStart.y);
@@ -1093,29 +2158,103 @@
 
         await updateAnalysis(activeRoi);
         document.getElementById('roi-ssim-val').textContent = currentMetrics.ssim.toFixed(4);
+        
+        // Update ROI table
+        document.getElementById('roi-sub-ssim').textContent = currentMetrics.ssim.toFixed(4);
+        document.getElementById('roi-sub-psnr').textContent = currentMetrics.psnr_db.toFixed(2) + " dB";
+        document.getElementById('roi-sub-mse').textContent = currentMetrics.mse.toFixed(2);
+        document.getElementById('roi-sub-dim').textContent = `${xmax - xmin}×${ymax - ymin}px`;
       };
     }
 
-    function downloadComparison() {
-      const a = document.createElement('a');
-      a.href = currentDistBase64;
-      a.download = "ssim_lab_distorted.png";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+    // =========================================================================
+    // 11. METRIC DETAILS MODALS
+    // =========================================================================
+    function openMetricModal(metricKey) {
+      const modal = document.getElementById('metric-modal');
+      const title = document.getElementById('mmodal-title');
+      const body = document.getElementById('mmodal-body');
+
+      const modalData = {
+        'ssim': {
+          title: "Mean Structural Similarity (SSIM)",
+          html: `
+            <p><strong>Formula (Wang et al., IEEE TIP 2004):</strong></p>
+            <div style="background: var(--surface-secondary); padding: 10px; border-radius: 6px; font-family: 'JetBrains Mono'; margin: 8px 0;">
+              SSIM(x, y) = [ (2μ<sub>x</sub>μ<sub>y</sub> + C<sub>1</sub>)(2σ<sub>xy</sub> + C<sub>2</sub>) ] / [ (μ<sub>x</sub><sup>2</sup> + μ<sub>y</sub><sup>2</sup> + C<sub>1</sub>)(σ<sub>x</sub><sup>2</sup> + σ<sub>y</sub><sup>2</sup> + C<sub>2</sub>) ]
+            </div>
+            <p><strong>Current Value:</strong> <code style="color: var(--metric-ssim); font-weight: bold;">${currentMetrics.ssim || '1.0000'}</code></p>
+            <p><strong>Parameters:</strong> Gaussian window size = 11×11, σ = 1.5, C<sub>1</sub> = (0.01·L)², C<sub>2</sub> = (0.03·L)².</p>
+            <p><strong>Interpretation:</strong> Unlike MSE, SSIM measures luminance, contrast, and structural cross-correlations, matching human perception.</p>
+          `
+        },
+        'msssim': {
+          title: "Multi-Scale SSIM (MS-SSIM)",
+          html: `
+            <p><strong>Formulation (Wang, Simoncelli, 2003):</strong></p>
+            <div style="background: var(--surface-secondary); padding: 10px; border-radius: 6px; font-family: 'JetBrains Mono'; margin: 8px 0;">
+              MS-SSIM(x, y) = [l<sub>M</sub>(x, y)]<sup>α<sub>M</sub></sup> · ∏<sub>j=1</sub><sup>M</sup> [c<sub>j</sub>(x, y)]<sup>β<sub>j</sub></sup> [s<sub>j</sub>(x, y)]<sup>γ<sub>j</sub></sup>
+            </div>
+            <p><strong>Current Value:</strong> <code style="color: var(--metric-ms-ssim); font-weight: bold;">${currentMetrics.ms_ssim || '1.0000'}</code></p>
+            <p>Evaluates structure across 5 dyadic pyramid scales using 2×2 decimation downsampling, accommodating viewing distances.</p>
+          `
+        },
+        'psnr': {
+          title: "Peak Signal-to-Noise Ratio (PSNR)",
+          html: `
+            <p><strong>Formula:</strong></p>
+            <div style="background: var(--surface-secondary); padding: 10px; border-radius: 6px; font-family: 'JetBrains Mono'; margin: 8px 0;">
+              PSNR = 10 · log<sub>10</sub> ( L² / MSE ) dB
+            </div>
+            <p><strong>Current Value:</strong> <code style="color: var(--metric-psnr); font-weight: bold;">${currentMetrics.psnr_db || '∞'} dB</code></p>
+            <p>When images are identical (MSE = 0), PSNR mathematically approaches infinity (∞ dB).</p>
+          `
+        },
+        'mse': {
+          title: "Pixel Error (MSE & MAE)",
+          html: `
+            <p><strong>Mean Squared Error (MSE):</strong> Average squared pixel deviation.</p>
+            <p><strong>Mean Absolute Error (MAE):</strong> L1 spatial loss.</p>
+            <p><strong>Current Scores:</strong> MSE = <code>${currentMetrics.mse || '0.00'}</code> | MAE = <code>${currentMetrics.mae || '0.00'}</code></p>
+          `
+        },
+        'lpips': {
+          title: "LPIPS / Perceptual Feature Distance",
+          html: `
+            <p><strong>Multi-Scale Directional Sobel Representation:</strong></p>
+            <p>Measures high-frequency gradient orientation discrepancies across spatial pyramid scales.</p>
+            <p><strong>Current Value:</strong> <code style="color: var(--metric-lpips); font-weight: bold;">${currentMetrics.perceptual_dist || '0.0000'}</code></p>
+            <p>Lower distance indicates greater perceptual fidelity to the Human Visual System.</p>
+          `
+        }
+      };
+
+      const data = modalData[metricKey] || modalData['ssim'];
+      title.textContent = data.title;
+      body.innerHTML = data.html;
+      modal.style.display = 'flex';
     }
 
-    // Keyboard Shortcuts (Space to flip in toggle mode)
+    function closeMetricModal(e = null) {
+      document.getElementById('metric-modal').style.display = 'none';
+    }
+
+    // =========================================================================
+    // 12. INITIALIZATION
+    // =========================================================================
     window.addEventListener('keydown', (e) => {
       if (e.code === 'Space' && currentViewMode === 'toggle' && document.activeElement.tagName !== 'INPUT') {
         e.preventDefault();
         toggleState = !toggleState;
         renderToggleState();
       }
+      if (e.code === 'Escape') {
+        closeMetricModal();
+      }
     });
 
-    // Startup Initialization
     window.onload = function() {
+      setupDragAndDrop();
       loadPattern('einstein');
     };
   </script>

@@ -71,3 +71,12 @@ def get_experiment(exp_id: str) -> Optional[Dict[str, Any]]:
         if exp["id"] == exp_id:
             return exp
     return None
+
+def delete_experiment(exp_id: str) -> bool:
+    """Deletes an experiment by ID."""
+    exps = _load_all()
+    filtered = [e for e in exps if e["id"] != exp_id]
+    if len(filtered) != len(exps):
+        _save_all(filtered)
+        return True
+    return False
