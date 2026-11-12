@@ -43,6 +43,7 @@ from engine.restoration import (
 from engine.visualizer import compute_diagnostic_maps, array_to_base64_image
 from engine.experiments import save_experiment, list_experiments, get_experiment, delete_experiment
 from engine.reports import generate_markdown_report, generate_csv_report
+from engine.audit import run_module_audit
 
 def base64_to_tensor(b64_str: str) -> Tuple[torch.Tensor, Tuple[int, int]]:
     """Decodes a base64 image data URL into a PyTorch tensor (1, C, H, W) normalized to [0, 1]."""
@@ -89,6 +90,7 @@ class SSIMLabRequestHandler(SimpleHTTPRequestHandler):
             "/api/experiments/list": self._handle_list_experiments,
             "/api/experiments/delete": self._handle_delete_experiment,
             "/api/reports/export": self._handle_export_report,
+            "/api/audit": self._handle_audit,
         }
 
         handler = routes.get(self.path)
@@ -124,7 +126,19 @@ class SSIMLabRequestHandler(SimpleHTTPRequestHandler):
             records = list_experiments()
             self._send_json({"experiments": records})
             return
+        elif self.path.startswith("/api/audit"):
+            audit_data = run_module_audit()
+            self._send_json(audit_data)
+            return
         super().do_GET()
+
+    def _handle_audit(self, data: dict):
+        try:
+            module_id = data.get("module")
+            audit_data = run_module_audit(module_id=module_id)
+            self._send_json(audit_data)
+        except Exception as e:
+            self._send_json({"error": str(e)}, status=500)
 
     def _handle_analyze(self, data: dict):
         try:
