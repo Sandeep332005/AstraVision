@@ -26,7 +26,7 @@
     body { background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
 
     /* Top Navigation */
-    header { background: var(--surface-2); border-bottom: 1px solid var(--border); padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; z-index: 100; }
+    header { background: var(--surface-2); border-bottom: 1px solid var(--border); padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; z-index: 100; flex-wrap: wrap; gap: 12px; }
     .brand { display: flex; align-items: center; gap: 12px; }
     .logo-badge { background: #1E2026; border: 1px solid var(--border); color: var(--accent); font-weight: 800; font-size: 13px; padding: 5px 10px; border-radius: 6px; letter-spacing: 0.08em; font-family: 'JetBrains Mono', monospace; }
     .brand-title { font-size: 16px; font-weight: 700; color: #fff; letter-spacing: -0.01em; }
@@ -34,6 +34,7 @@
 
     .nav-tabs { display: flex; gap: 4px; background: var(--bg); padding: 4px; border-radius: 8px; border: 1px solid var(--border); }
     .nav-btn { background: transparent; border: none; color: var(--text-muted); font-size: 12px; font-weight: 600; padding: 6px 14px; border-radius: 6px; cursor: pointer; transition: all 0.15s; }
+    .nav-btn:hover { color: #fff; }
     .nav-btn.active { background: var(--card-bg); color: #fff; border: 1px solid var(--border); }
 
     .header-actions { display: flex; gap: 8px; align-items: center; }
@@ -86,8 +87,8 @@
     .val-ssim { color: var(--success); }
 
     /* Viewport Studio */
-    .view-toolbar { display: flex; justify-content: space-between; align-items: center; background: var(--surface-2); border: 1px solid var(--border); border-bottom: none; border-radius: 8px 8px 0 0; padding: 8px 14px; font-size: 11px; font-family: 'JetBrains Mono', monospace; }
-    .split-viewport { position: relative; width: 100%; height: 480px; background: #0A0B0E; border: 1px solid var(--border); border-radius: 0 0 8px 8px; overflow: hidden; margin-bottom: 18px; cursor: grab; }
+    .view-toolbar { display: flex; justify-content: space-between; align-items: center; background: var(--surface-2); border: 1px solid var(--border); border-bottom: none; border-radius: 8px 8px 0 0; padding: 8px 14px; font-size: 11px; font-family: 'JetBrains Mono', monospace; flex-wrap: wrap; gap: 8px; }
+    .split-viewport { position: relative; width: 100%; height: 500px; background: #0A0B0E; border: 1px solid var(--border); border-radius: 0 0 8px 8px; overflow: hidden; margin-bottom: 18px; cursor: grab; user-select: none; }
     .split-viewport:active { cursor: grabbing; }
     .canvas-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; transform-origin: 0 0; }
     .view-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
@@ -98,6 +99,17 @@
     .badge-ref { left: 10px; color: var(--success); border: 1px solid rgba(53, 201, 138, 0.3); }
     .badge-dist { right: 10px; color: var(--accent); border: 1px solid rgba(101, 169, 255, 0.3); }
 
+    /* Side-by-side mode */
+    .split-viewport.mode-side .view-img#img-ref { width: 50%; left: 0; clip-path: none !important; }
+    .split-viewport.mode-side .view-img#img-dist { width: 50%; left: 50%; clip-path: none !important; }
+    .split-viewport.mode-side .split-divider { display: none; }
+    .split-viewport.mode-side .badge-dist { right: auto; left: 510px; }
+
+    /* Toggle mode */
+    .split-viewport.mode-toggle .view-img#img-ref { width: 100%; left: 0; clip-path: none !important; }
+    .split-viewport.mode-toggle .view-img#img-dist { width: 100%; left: 0; clip-path: none !important; }
+    .split-viewport.mode-toggle .split-divider { display: none; }
+
     /* ROI Box Drawer */
     #roi-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 25; pointer-events: none; }
     #roi-canvas.active { pointer-events: auto; cursor: crosshair; }
@@ -107,7 +119,7 @@
     @media (max-width: 900px) { .heatmap-grid { grid-template-columns: 1fr; } }
     .heatmap-card { background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
     .heatmap-hdr { padding: 8px 12px; background: rgba(0,0,0,0.3); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; text-transform: uppercase; }
-    .heatmap-img { width: 100%; aspect-ratio: 1; object-fit: contain; display: block; background: #000; }
+    .heatmap-img { width: 100%; aspect-ratio: 1.2; object-fit: contain; display: block; background: #000; }
 
     /* Benchmark Table */
     .b-table { width: 100%; border-collapse: collapse; font-size: 11px; text-align: left; }
@@ -121,8 +133,8 @@
 
     /* Status Bar */
     .status-bar { background: var(--surface-2); border-top: 1px solid var(--border); padding: 8px 24px; font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center; }
-    .status-indicator { display: flex; align-items: center; gap: 6px; }
-    .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--success); }
+    .status-indicator { display: flex; align-items: center; gap: 8px; }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); }
     .status-dot.busy { background: var(--warning); animation: pulse 1s infinite; }
     @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
   </style>
@@ -140,11 +152,11 @@
     </div>
 
     <div class="nav-tabs">
-      <button class="nav-btn active" onclick="setTab('comparison')">1. Comparison Studio</button>
-      <button class="nav-btn" onclick="setTab('heatmaps')">2. Structural Heatmaps</button>
-      <button class="nav-btn" onclick="setTab('restoration')">3. Restoration Lab</button>
-      <button class="nav-btn" onclick="setTab('benchmark')">4. Benchmark Arena</button>
-      <button class="nav-btn" onclick="setTab('experiments')">5. Experiments</button>
+      <button class="nav-btn active" data-tab="comparison" onclick="setTab('comparison', this)">1. Comparison Studio</button>
+      <button class="nav-btn" data-tab="heatmaps" onclick="setTab('heatmaps', this)">2. Structural Heatmaps</button>
+      <button class="nav-btn" data-tab="restoration" onclick="setTab('restoration', this)">3. Restoration Lab</button>
+      <button class="nav-btn" data-tab="benchmark" onclick="setTab('benchmark', this)">4. Benchmark Arena</button>
+      <button class="nav-btn" data-tab="experiments" onclick="setTab('experiments', this)">5. Experiments</button>
     </div>
 
     <div class="header-actions">
@@ -180,13 +192,14 @@
             <div class="dz-sub">Test Image</div>
           </div>
         </div>
-        <div style="display: flex; gap: 6px;">
-          <button class="btn" style="flex: 1; justify-content: center;" onclick="loadPattern('einstein')">Einstein Face</button>
-          <button class="btn" style="flex: 1; justify-content: center;" onclick="loadPattern('zoneplate')">Zone Plate</button>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+          <button class="btn" style="justify-content: center;" onclick="loadPattern('einstein')">Einstein Face</button>
+          <button class="btn" style="justify-content: center;" onclick="loadPattern('zone')">Zone Plate</button>
         </div>
       </div>
 
-      <!-- DISTORTION STUDIO -->
+      <!-- DISTORTION LABORATORY -->
       <div class="card">
         <div class="card-header">
           <span class="card-title">Distortion Laboratory</span>
@@ -196,29 +209,29 @@
         <div style="margin-bottom: 14px;">
           <div style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px;">Equal-MSE Benchmark (MSE ≈ 144)</div>
           <div class="preset-list">
-            <div class="preset-item active" onclick="loadBenchmarkPreset('original')">
+            <div class="preset-item active" data-preset="original" onclick="loadBenchmarkPreset('original', this)">
               <span>1. Reference (Self)</span>
               <span class="preset-sub">MSE=0 | SSIM=1.000</span>
             </div>
-            <div class="preset-item" onclick="loadBenchmarkPreset('meanshift')">
+            <div class="preset-item" data-preset="meanshift" onclick="loadBenchmarkPreset('meanshift', this)">
               <span>2. Mean Shift (+12 DC)</span>
-              <span class="preset-sub">MSE=144 | SSIM=0.988</span>
+              <span class="preset-sub">MSE≈144 | SSIM≈0.988</span>
             </div>
-            <div class="preset-item" onclick="loadBenchmarkPreset('contrast')">
+            <div class="preset-item" data-preset="contrast" onclick="loadBenchmarkPreset('contrast', this)">
               <span>3. Contrast Reduction</span>
-              <span class="preset-sub">MSE=144 | SSIM=0.913</span>
+              <span class="preset-sub">MSE≈144 | SSIM≈0.913</span>
             </div>
-            <div class="preset-item" onclick="loadBenchmarkPreset('impulse')">
+            <div class="preset-item" data-preset="impulse" onclick="loadBenchmarkPreset('impulse', this)">
               <span>4. Impulse (Salt & Pepper)</span>
-              <span class="preset-sub">MSE=144 | SSIM=0.840</span>
+              <span class="preset-sub">MSE≈144 | SSIM≈0.840</span>
             </div>
-            <div class="preset-item" onclick="loadBenchmarkPreset('blur')">
+            <div class="preset-item" data-preset="blur" onclick="loadBenchmarkPreset('blur', this)">
               <span>5. Gaussian Blur</span>
-              <span class="preset-sub">MSE=144 | SSIM=0.694</span>
+              <span class="preset-sub">MSE≈144 | SSIM≈0.694</span>
             </div>
-            <div class="preset-item" onclick="loadBenchmarkPreset('jpeg')">
+            <div class="preset-item" data-preset="jpeg" onclick="loadBenchmarkPreset('jpeg', this)">
               <span>6. Real JPEG (Q=12 DCT)</span>
-              <span class="preset-sub">MSE=142 | SSIM=0.662</span>
+              <span class="preset-sub">MSE≈142 | SSIM≈0.662</span>
             </div>
           </div>
         </div>
@@ -232,7 +245,8 @@
               <span>Gaussian Blur (σ)</span>
               <span class="control-val" id="val-blur">0.0</span>
             </div>
-            <input type="range" id="sl-blur" min="0" max="6" step="0.5" value="0" onchange="triggerDistortion('blur', {sigma: this.value})">
+            <input type="range" id="sl-blur" min="0" max="6" step="0.5" value="0"
+              oninput="document.getElementById('val-blur').textContent = parseFloat(this.value).toFixed(1); debounceDistortion('blur', {sigma: this.value})">
           </div>
 
           <div class="control-row">
@@ -240,7 +254,8 @@
               <span>Additive Gaussian Noise (σ)</span>
               <span class="control-val" id="val-noise">0.00</span>
             </div>
-            <input type="range" id="sl-noise" min="0" max="0.4" step="0.02" value="0" onchange="triggerDistortion('noise', {sigma: this.value, seed: document.getElementById('input-seed').value})">
+            <input type="range" id="sl-noise" min="0" max="0.4" step="0.02" value="0"
+              oninput="document.getElementById('val-noise').textContent = parseFloat(this.value).toFixed(2); debounceDistortion('noise', {sigma: this.value, seed: document.getElementById('input-seed').value})">
           </div>
 
           <div class="control-row">
@@ -248,7 +263,8 @@
               <span>Salt & Pepper Probability</span>
               <span class="control-val" id="val-salt">0%</span>
             </div>
-            <input type="range" id="sl-salt" min="0" max="0.15" step="0.01" value="0" onchange="triggerDistortion('salt_pepper', {prob: this.value, seed: document.getElementById('input-seed').value})">
+            <input type="range" id="sl-salt" min="0" max="0.15" step="0.01" value="0"
+              oninput="document.getElementById('val-salt').textContent = Math.round(this.value * 100) + '%'; debounceDistortion('salt_pepper', {prob: this.value, seed: document.getElementById('input-seed').value})">
           </div>
 
           <div class="control-row">
@@ -256,7 +272,8 @@
               <span>Real JPEG Quality (DCT Q-Table)</span>
               <span class="control-val" id="val-jpeg">100 (No Loss)</span>
             </div>
-            <input type="range" id="sl-jpeg" min="5" max="100" step="5" value="100" onchange="triggerDistortion('jpeg', {quality: this.value})">
+            <input type="range" id="sl-jpeg" min="5" max="100" step="5" value="100"
+              oninput="document.getElementById('val-jpeg').textContent = (this.value == 100) ? '100 (No Loss)' : 'Q=' + this.value; debounceDistortion('jpeg', {quality: this.value})">
           </div>
 
           <div class="control-row">
@@ -306,9 +323,14 @@
       <!-- TAB 1: COMPARISON STUDIO -->
       <div id="tab-comparison" class="tab-pane">
         <div class="view-toolbar">
-          <div>
-            <span>VIEW: Split-Screen Inspector</span> · 
-            <span style="color: var(--text-muted);">Use mouse wheel to zoom, drag to pan</span>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span>VIEW:</span>
+            <div style="display: inline-flex; gap: 2px; background: var(--bg); padding: 2px; border-radius: 6px; border: 1px solid var(--border);">
+              <button class="btn" id="vm-split" style="padding: 3px 8px; font-size: 10px; background: var(--card-bg);" onclick="setViewMode('split')">⟷ Split Slider</button>
+              <button class="btn" id="vm-side" style="padding: 3px 8px; font-size: 10px;" onclick="setViewMode('side')">⧉ Side-by-Side</button>
+              <button class="btn" id="vm-toggle" style="padding: 3px 8px; font-size: 10px;" onclick="setViewMode('toggle')">⇄ A/B Toggle</button>
+            </div>
+            <span style="color: var(--text-muted); font-size: 10px;">(Wheel: zoom · Drag: pan)</span>
           </div>
           <div style="display: flex; gap: 8px;">
             <button class="btn" style="padding: 3px 8px; font-size: 10px;" onclick="resetZoom()">Reset View (1:1)</button>
@@ -326,8 +348,8 @@
           <div class="split-divider" id="divider">
             <div class="split-handle">⟷</div>
           </div>
-          <span class="view-badge badge-ref">Reference (Left)</span>
-          <span class="view-badge badge-dist">Distorted (Right)</span>
+          <span class="view-badge badge-ref" id="badge-ref">Reference (Left)</span>
+          <span class="view-badge badge-dist" id="badge-dist">Distorted (Right)</span>
         </div>
 
         <!-- REGIONAL ROI FEEDBACK -->
@@ -336,6 +358,7 @@
           <span id="roi-coords">None</span> | 
           <span style="color: var(--success); font-weight: bold;">Regional SSIM:</span> 
           <span id="roi-ssim-val">N/A</span>
+          <button class="btn" style="margin-left: 12px; padding: 2px 8px; font-size: 10px;" onclick="clearRoi()">Clear ROI</button>
         </div>
       </div>
 
@@ -382,12 +405,12 @@
             <span class="card-title">Image Restoration Laboratory</span>
             <span style="font-size: 11px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace;">Quantify Metric Recovery (Δ SSIM)</span>
           </div>
-          <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 14px;">
-            <button class="btn" onclick="executeRestoration('median')">Median Filter</button>
-            <button class="btn" onclick="executeRestoration('gaussian')">Gaussian Filter</button>
-            <button class="btn" onclick="executeRestoration('bilateral')">Bilateral Filter</button>
-            <button class="btn" onclick="executeRestoration('nlm')">Non-Local Means</button>
-            <button class="btn" onclick="executeRestoration('unsharp')">Unsharp Mask</button>
+          <div id="restore-btns" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 14px;">
+            <button class="btn" onclick="executeRestoration('median', this)">Median Filter</button>
+            <button class="btn" onclick="executeRestoration('gaussian', this)">Gaussian Filter</button>
+            <button class="btn" onclick="executeRestoration('bilateral', this)">Bilateral Filter</button>
+            <button class="btn" onclick="executeRestoration('nlm', this)">Non-Local Means</button>
+            <button class="btn" onclick="executeRestoration('unsharp', this)">Unsharp Mask</button>
           </div>
 
           <div style="background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 14px; font-size: 12px; font-family: 'JetBrains Mono', monospace;" id="restore-info">
@@ -401,7 +424,7 @@
         <div class="card">
           <div class="card-header">
             <span class="card-title">Empirical Benchmark Arena</span>
-            <button class="btn btn-primary" onclick="executeFullBenchmark()">Run Full Benchmark</button>
+            <button class="btn btn-primary" id="btn-run-benchmark" onclick="executeFullBenchmark()">Run Full Benchmark</button>
           </div>
           <table class="b-table">
             <thead>
@@ -456,13 +479,17 @@
   </footer>
 
   <script>
-    const W = 256, H = 256;
+    let currentWidth = 256, currentHeight = 256;
     let currentRefBase64 = null;
     let currentDistBase64 = null;
     let currentMetrics = {};
     let latestBenchmarks = [];
     let isRoiMode = false;
-    let roiStart = null, roiBox = null;
+    let activeRoi = null;
+    let roiStart = null;
+    let currentViewMode = 'split'; // 'split', 'side', 'toggle'
+    let toggleState = false; // false = ref, true = dist
+    let debounceTimer = null;
 
     // Pan & Zoom State
     let zoomLevel = 1.0, panX = 0, panY = 0;
@@ -470,6 +497,8 @@
 
     // Synthetic Einstein Portrait
     function createSyntheticEinstein() {
+      const W = 256, H = 256;
+      currentWidth = W; currentHeight = H;
       const c = document.createElement('canvas');
       c.width = W; c.height = H;
       const ctx = c.getContext('2d');
@@ -502,6 +531,8 @@
     }
 
     function createZonePlate() {
+      const W = 256, H = 256;
+      currentWidth = W; currentHeight = H;
       const c = document.createElement('canvas');
       c.width = W; c.height = H;
       const ctx = c.getContext('2d');
@@ -521,11 +552,13 @@
     }
 
     // Set Active Tab
-    function setTab(name) {
+    function setTab(name, element = null) {
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
       document.querySelectorAll('.tab-pane').forEach(p => p.style.display = 'none');
-      event.target.classList.add('active');
-      document.getElementById('tab-' + name).style.display = 'block';
+      const targetBtn = element || document.querySelector(`[data-tab="${name}"]`);
+      if (targetBtn) targetBtn.classList.add('active');
+      const targetPane = document.getElementById('tab-' + name);
+      if (targetPane) targetPane.style.display = 'block';
       if (name === 'experiments') loadExperimentList();
     }
 
@@ -540,13 +573,22 @@
       if (!file) return;
       const reader = new FileReader();
       reader.onload = function(evt) {
-        if (type === 'ref') {
-          currentRefBase64 = evt.target.result;
-          currentDistBase64 = evt.target.result;
-        } else {
-          currentDistBase64 = evt.target.result;
-        }
-        updateAnalysis();
+        const tempImg = new Image();
+        tempImg.onload = function() {
+          currentWidth = tempImg.naturalWidth;
+          currentHeight = tempImg.naturalHeight;
+          document.getElementById('img-dim-badge').textContent = `${currentWidth} × ${currentHeight}`;
+          if (type === 'ref') {
+            currentRefBase64 = evt.target.result;
+            currentDistBase64 = evt.target.result;
+          } else {
+            currentDistBase64 = evt.target.result;
+          }
+          activeRoi = null;
+          document.getElementById('roi-feedback').style.display = 'none';
+          updateAnalysis();
+        };
+        tempImg.src = evt.target.result;
       };
       reader.readAsDataURL(file);
     }
@@ -555,11 +597,60 @@
       const b64 = (type === 'einstein') ? createSyntheticEinstein() : createZonePlate();
       currentRefBase64 = b64;
       currentDistBase64 = b64;
+      activeRoi = null;
+      document.getElementById('roi-feedback').style.display = 'none';
+      document.getElementById('img-dim-badge').textContent = `${currentWidth} × ${currentHeight}`;
       updateAnalysis();
     }
 
+    // View Mode Switching
+    function setViewMode(mode) {
+      currentViewMode = mode;
+      const vp = document.getElementById('viewport');
+      vp.classList.remove('mode-side', 'mode-toggle');
+      document.querySelectorAll('.view-mode-btn').forEach(b => b.style.background = 'transparent');
+      
+      const btnMap = { 'split': 'vm-split', 'side': 'vm-side', 'toggle': 'vm-toggle' };
+      const activeBtn = document.getElementById(btnMap[mode]);
+      if (activeBtn) activeBtn.style.background = 'var(--card-bg)';
+
+      if (mode === 'split') {
+        divider.style.display = 'block';
+        document.getElementById('img-dist').style.opacity = '1';
+        document.getElementById('img-dist').style.clipPath = 'polygon(50% 0, 100% 0, 100% 100%, 50% 100%)';
+        document.getElementById('badge-ref').textContent = "Reference (Left)";
+        document.getElementById('badge-dist').textContent = "Distorted (Right)";
+        document.getElementById('badge-dist').style.display = 'block';
+      } else if (mode === 'side') {
+        vp.classList.add('mode-side');
+        divider.style.display = 'none';
+        document.getElementById('img-dist').style.opacity = '1';
+        document.getElementById('badge-ref').textContent = "Reference";
+        document.getElementById('badge-dist').textContent = "Distorted";
+        document.getElementById('badge-dist').style.display = 'block';
+      } else if (mode === 'toggle') {
+        vp.classList.add('mode-toggle');
+        divider.style.display = 'none';
+        toggleState = false;
+        renderToggleState();
+      }
+    }
+
+    function renderToggleState() {
+      const distImg = document.getElementById('img-dist');
+      if (toggleState) {
+        distImg.style.opacity = '1';
+        document.getElementById('badge-ref').textContent = "VIEWING: Distorted (Click to flip)";
+        document.getElementById('badge-dist').style.display = 'none';
+      } else {
+        distImg.style.opacity = '0';
+        document.getElementById('badge-ref').textContent = "VIEWING: Reference (Click to flip)";
+        document.getElementById('badge-dist').style.display = 'none';
+      }
+    }
+
     // Server-Side Analysis Call
-    async function updateAnalysis(roi = null) {
+    async function updateAnalysis(roi = activeRoi) {
       setStatus("Computing PyTorch SSIM & Heatmaps...", true);
       const threshold = parseFloat(document.getElementById('sl-thresh').value);
       document.getElementById('lbl-thresh').textContent = threshold.toFixed(2);
@@ -591,19 +682,31 @@
         document.getElementById('img-ref').src = currentRefBase64;
         document.getElementById('img-dist').src = currentDistBase64;
 
-        document.getElementById('hm-ssim').src = data.heatmaps.ssim_map;
-        document.getElementById('hm-error').src = data.heatmaps.error_map;
-        document.getElementById('hm-mask').src = data.heatmaps.threshold_mask;
+        if (data.heatmaps) {
+          document.getElementById('hm-ssim').src = data.heatmaps.ssim_map;
+          document.getElementById('hm-error').src = data.heatmaps.error_map;
+          document.getElementById('hm-mask').src = data.heatmaps.threshold_mask;
+        }
 
         if (data.image_meta) {
-          document.getElementById('img-dim-badge').textContent = `${data.image_meta.width} × ${data.image_meta.height}`;
+          currentWidth = data.image_meta.width;
+          currentHeight = data.image_meta.height;
+          document.getElementById('img-dim-badge').textContent = `${currentWidth} × ${currentHeight}`;
         }
 
         setStatus("Ready · PyTorch Evaluation Complete", false);
       } catch (err) {
-        console.error("API error, falling back to local canvas:", err);
-        setStatus("Local Fallback Mode Active", false);
+        console.error("API error:", err);
+        setStatus("Evaluation Error: " + err.message, false);
       }
+    }
+
+    // Debounced Distortion Trigger
+    function debounceDistortion(type, params) {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        triggerDistortion(type, params);
+      }, 180);
     }
 
     // Parametric Distortion API Call
@@ -623,23 +726,24 @@
         if (data.error) throw new Error(data.error);
 
         currentDistBase64 = data.distorted_image;
-        updateAnalysis();
+        await updateAnalysis();
       } catch (err) {
         console.error(err);
-        setStatus("Distortion failed", false);
+        setStatus("Distortion failed: " + err.message, false);
       }
     }
 
     // Equal-MSE Benchmark Presets
-    function loadBenchmarkPreset(name) {
+    function loadBenchmarkPreset(name, element = null) {
       document.querySelectorAll('.preset-item').forEach(el => el.classList.remove('active'));
-      event.currentTarget.classList.add('active');
+      const activeEl = element || document.querySelector(`[data-preset="${name}"]`);
+      if (activeEl) activeEl.classList.add('active');
 
       if (name === 'original') {
         currentDistBase64 = currentRefBase64;
         updateAnalysis();
       } else if (name === 'meanshift') {
-        triggerDistortion('brightness_contrast', { brightness: 0.05, contrast: 1.0 });
+        triggerDistortion('brightness_contrast', { brightness: 0.047, contrast: 1.0 });
       } else if (name === 'contrast') {
         triggerDistortion('brightness_contrast', { brightness: 0.0, contrast: 0.88 });
       } else if (name === 'impulse') {
@@ -652,7 +756,9 @@
     }
 
     // Restoration API Call
-    async function executeRestoration(method) {
+    async function executeRestoration(method, btnEl = null) {
+      document.querySelectorAll('#restore-btns .btn').forEach(b => b.classList.remove('btn-primary'));
+      if (btnEl) btnEl.classList.add('btn-primary');
       setStatus(`Executing PyTorch ${method.toUpperCase()} restoration...`, true);
       try {
         const res = await fetch("/api/restore", {
@@ -668,25 +774,36 @@
         if (data.error) throw new Error(data.error);
 
         currentDistBase64 = data.restored_image;
-        updateAnalysis();
+        await updateAnalysis();
 
         const delta = data.delta_ssim;
+        const deltaColor = delta >= 0 ? 'var(--success)' : 'var(--danger)';
+        const deltaSign = delta >= 0 ? '+' : '';
         document.getElementById('restore-info').innerHTML = `
-          <strong>Algorithm Executed: ${method.toUpperCase()}</strong> · Execution Runtime: <code>${data.runtime_ms} ms</code><br>
-          Recovered SSIM: <code>${data.metrics.ssim.toFixed(4)}</code> 
-          (<span style="color: ${delta >= 0 ? 'var(--success)' : 'var(--danger)'}; font-weight: bold;">Δ SSIM = ${delta >= 0 ? '+' : ''}${delta}</span>) · 
-          PSNR: <code>${data.metrics.psnr_db.toFixed(2)} dB</code> · 
-          <a href="${data.restored_image}" download="restored_${method}.png" style="color: var(--accent); text-decoration: underline; margin-left: 8px;">Download Restored PNG</a>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <strong style="color: #fff; font-size: 13px;">Algorithm: ${method.toUpperCase()}</strong>
+            <span style="color: var(--text-muted);">Runtime: <code style="color: #fff;">${data.runtime_ms} ms</code></span>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; background: rgba(0,0,0,0.25); padding: 10px; border-radius: 6px; margin-bottom: 8px;">
+            <div>SSIM: <code style="color: var(--success); font-weight: bold;">${data.metrics.ssim.toFixed(4)}</code></div>
+            <div>Recovery: <code style="color: ${deltaColor}; font-weight: bold;">${deltaSign}${delta.toFixed(4)}</code></div>
+            <div>PSNR: <code style="color: #93C5FD;">${data.metrics.psnr_db.toFixed(2)} dB</code></div>
+          </div>
+          <a href="${data.restored_image}" download="restored_${method}.png" class="btn btn-primary" style="display: inline-flex; text-decoration: none; padding: 4px 10px; font-size: 11px;">
+            ↓ Download Restored PNG
+          </a>
         `;
       } catch (err) {
         console.error(err);
-        setStatus("Restoration error", false);
+        setStatus("Restoration error: " + err.message, false);
       }
     }
 
     // Full Benchmark Execution
     async function executeFullBenchmark() {
       setStatus("Running Full PyTorch Restoration Benchmark Suite...", true);
+      const btn = document.getElementById('btn-run-benchmark');
+      if (btn) btn.disabled = true;
       try {
         const res = await fetch("/api/benchmark", {
           method: "POST",
@@ -697,6 +814,8 @@
           }),
         });
         const data = await res.json();
+        if (data.error) throw new Error(data.error);
+
         latestBenchmarks = data.benchmark_results;
 
         const tbody = document.getElementById('b-tbody');
@@ -720,14 +839,16 @@
         setStatus("Benchmark Suite Complete", false);
       } catch (err) {
         console.error(err);
-        setStatus("Benchmark failed", false);
+        setStatus("Benchmark failed: " + err.message, false);
+      } finally {
+        if (btn) btn.disabled = false;
       }
     }
 
     // Experiment Persistence
     async function saveActiveExperiment() {
       setStatus("Saving experiment to history...", true);
-      const name = prompt("Enter Experiment Name:", "Parametric Noise & Restoration Test") || "Untitled Experiment";
+      const name = prompt("Enter Experiment Name:", "Parametric Distortion Test") || "Untitled Experiment";
       try {
         const res = await fetch("/api/experiments/save", {
           method: "POST",
@@ -744,10 +865,12 @@
           }),
         });
         const data = await res.json();
+        if (data.error) throw new Error(data.error);
         alert(`✓ Experiment saved successfully as ${data.record.id}`);
         setStatus("Experiment Saved", false);
       } catch (err) {
         console.error(err);
+        setStatus("Save failed: " + err.message, false);
       }
     }
 
@@ -789,21 +912,27 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             format: format,
-            experiment: { id: "EXP-CURRENT", image_name: "Active Sample", timestamp: new Date().toISOString() },
+            experiment: { id: "EXP-" + Date.now(), image_name: "Active Sample", timestamp: new Date().toISOString() },
             benchmarks: latestBenchmarks,
-            image_meta: { width: W, height: H, channels: 3 },
+            image_meta: { width: currentWidth, height: currentHeight, channels: 3 },
           }),
         });
         const data = await res.json();
+        if (data.error) throw new Error(data.error);
+
         const blob = new Blob([data.content], { type: data.mime });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
         a.download = data.filename;
+        document.body.appendChild(a);
         a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
         setStatus("Report Downloaded", false);
       } catch (err) {
         console.error(err);
+        setStatus("Export failed: " + err.message, false);
       }
     }
 
@@ -815,7 +944,7 @@
     divider.addEventListener('mousedown', () => isSplitDragging = true);
     window.addEventListener('mouseup', () => isSplitDragging = false);
     window.addEventListener('mousemove', (e) => {
-      if (!isSplitDragging) return;
+      if (!isSplitDragging || currentViewMode !== 'split') return;
       const rect = viewport.getBoundingClientRect();
       let pos = (e.clientX - rect.left) / rect.width;
       pos = Math.max(0.05, Math.min(0.95, pos));
@@ -833,6 +962,11 @@
 
     viewport.addEventListener('mousedown', (e) => {
       if (isRoiMode || isSplitDragging) return;
+      if (currentViewMode === 'toggle') {
+        toggleState = !toggleState;
+        renderToggleState();
+        return;
+      }
       isPanning = true;
       startPanX = e.clientX - panX;
       startPanY = e.clientY - panY;
@@ -869,12 +1003,41 @@
         canvas.height = viewport.clientHeight;
         initRoiCanvas();
       } else {
-        btn.textContent = "Draw ROI Box";
-        btn.classList.remove('btn-primary');
-        canvas.classList.remove('active');
-        document.getElementById('roi-feedback').style.display = 'none';
-        updateAnalysis(null);
+        clearRoi();
       }
+    }
+
+    function clearRoi() {
+      isRoiMode = false;
+      activeRoi = null;
+      const btn = document.getElementById('btn-roi');
+      const canvas = document.getElementById('roi-canvas');
+      btn.textContent = "Draw ROI Box";
+      btn.classList.remove('btn-primary');
+      canvas.classList.remove('active');
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      document.getElementById('roi-feedback').style.display = 'none';
+      updateAnalysis(null);
+    }
+
+    function getVisibleImageRect(containerW, containerH, imgW, imgH) {
+      const containerAspect = containerW / containerH;
+      const imgAspect = imgW / imgH;
+      let renderW, renderH, offsetX, offsetY;
+
+      if (containerAspect > imgAspect) {
+        renderH = containerH;
+        renderW = containerH * imgAspect;
+        offsetX = (containerW - renderW) / 2;
+        offsetY = 0;
+      } else {
+        renderW = containerW;
+        renderH = containerW / imgAspect;
+        offsetX = 0;
+        offsetY = (containerH - renderH) / 2;
+      }
+      return { renderW, renderH, offsetX, offsetY };
     }
 
     function initRoiCanvas() {
@@ -896,25 +1059,39 @@
         ctx.clearRect(0, 0, c.width, c.height);
         ctx.strokeStyle = '#65A9FF';
         ctx.lineWidth = 2;
+        ctx.setLineDash([4, 4]);
         ctx.strokeRect(roiStart.x, roiStart.y, curX - roiStart.x, curY - roiStart.y);
       };
 
       c.onmouseup = async (e) => {
+        if (!drawing) return;
         drawing = false;
         const rect = c.getBoundingClientRect();
         const endX = e.clientX - rect.left;
         const endY = e.clientY - rect.top;
 
-        // Map ROI to image coords [ymin, xmin, ymax, xmax]
-        const ymin = Math.round(Math.min(roiStart.y, endY) / c.height * H);
-        const ymax = Math.round(Math.max(roiStart.y, endY) / c.height * H);
-        const xmin = Math.round(Math.min(roiStart.x, endX) / c.width * W);
-        const xmax = Math.round(Math.max(roiStart.x, endX) / c.width * W);
+        const { renderW, renderH, offsetX, offsetY } = getVisibleImageRect(c.width, c.height, currentWidth, currentHeight);
 
+        const startImgX = Math.max(0, Math.min(currentWidth, Math.round((roiStart.x - offsetX) / renderW * currentWidth)));
+        const startImgY = Math.max(0, Math.min(currentHeight, Math.round((roiStart.y - offsetY) / renderH * currentHeight)));
+        const endImgX = Math.max(0, Math.min(currentWidth, Math.round((endX - offsetX) / renderW * currentWidth)));
+        const endImgY = Math.max(0, Math.min(currentHeight, Math.round((endY - offsetY) / renderH * currentHeight)));
+
+        const ymin = Math.min(startImgY, endImgY);
+        const ymax = Math.max(startImgY, endImgY);
+        const xmin = Math.min(startImgX, endImgX);
+        const xmax = Math.max(startImgX, endImgX);
+
+        if ((xmax - xmin) < 5 || (ymax - ymin) < 5) {
+          clearRoi();
+          return;
+        }
+
+        activeRoi = [ymin, xmin, ymax, xmax];
         document.getElementById('roi-feedback').style.display = 'block';
-        document.getElementById('roi-coords').textContent = `[${ymin}, ${xmin}] to [${ymax}, ${xmax}]`;
+        document.getElementById('roi-coords').textContent = `[${ymin}, ${xmin}] to [${ymax}, ${xmax}] (${xmax - xmin}×${ymax - ymin}px)`;
 
-        await updateAnalysis([ymin, xmin, ymax, xmax]);
+        await updateAnalysis(activeRoi);
         document.getElementById('roi-ssim-val').textContent = currentMetrics.ssim.toFixed(4);
       };
     }
@@ -922,9 +1099,20 @@
     function downloadComparison() {
       const a = document.createElement('a');
       a.href = currentDistBase64;
-      a.download = "comparison_distorted.png";
+      a.download = "ssim_lab_distorted.png";
+      document.body.appendChild(a);
       a.click();
+      document.body.removeChild(a);
     }
+
+    // Keyboard Shortcuts (Space to flip in toggle mode)
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' && currentViewMode === 'toggle' && document.activeElement.tagName !== 'INPUT') {
+        e.preventDefault();
+        toggleState = !toggleState;
+        renderToggleState();
+      }
+    });
 
     // Startup Initialization
     window.onload = function() {

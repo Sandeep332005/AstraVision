@@ -11,7 +11,7 @@ import base64
 import io
 import time
 from typing import Tuple, Dict, Any, Optional
-from http.server import HTTPServer, SimpleHTTPRequestHandler
+from http.server import HTTPServer, ThreadingHTTPServer, SimpleHTTPRequestHandler
 import torch
 import numpy as np
 from PIL import Image
@@ -97,17 +97,22 @@ class SSIMLabRequestHandler(SimpleHTTPRequestHandler):
             self._send_json({"error": f"Endpoint {self.path} not found"}, status=404)
 
     def _send_json(self, response_data: dict, status: int = 200):
+        body = json.dumps(response_data).encode("utf-8")
         self.send_response(status)
         self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(body)))
         self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type")
         self.end_headers()
-        self.wfile.write(json.dumps(response_data).encode("utf-8"))
+        self.wfile.write(body)
 
     def do_OPTIONS(self):
         self.send_response(200)
         self.send_header("Access-Control-Allow-Origin", "*")
         self.send_header("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
         self.send_header("Access-Control-Allow-Headers", "Content-Type")
+        self.send_header("Content-Length", "0")
         self.end_headers()
 
     def do_GET(self):
@@ -119,7 +124,6 @@ class SSIMLabRequestHandler(SimpleHTTPRequestHandler):
             self._send_json({"experiments": records})
             return
         super().do_GET()
-        self.end_headers()
 
     def _handle_analyze(self, data: dict):
         try:
@@ -238,7 +242,18 @@ class SSIMLabRequestHandler(SimpleHTTPRequestHandler):
             if ref.shape[-2:] != dist.shape[-2:]:
                 dist = torch.nn.functional.interpolate(dist, size=ref.shape[-2:], mode="bilinear", align_corners=False)
 
-            results = benchmark_restorations(ref, dist)
+            # Keep benchmark responsive on large mega-pixel images
+            if max(ref.shape[-2:]) > 768:
+                scale = 768.0 / max(ref.shape[-2:])
+                target_h = int(ref.shape[-2] * scale)
+                target_w = int(ref.shape[-1] * scale)
+                ref_bm = torch.nn.functional.interpolate(ref, size=(target_h, target_w), mode="bilinear", align_corners=False)
+                dist_bm = torch.nn.functional.interpolate(dist, size=(target_h, target_w), mode="bilinear", align_corners=False)
+            else:
+                ref_bm = ref
+                dist_bm = dist
+
+            results = benchmark_restorations(ref_bm, dist_bm)
             self._send_json({"benchmark_results": results})
         except Exception as e:
             self._send_json({"error": str(e)}, status=500)
@@ -284,7 +299,7 @@ class SSIMLabRequestHandler(SimpleHTTPRequestHandler):
 
 def start_server(port: int = 8000):
     server_address = ("127.0.0.1", port)
-    httpd = HTTPServer(server_address, SSIMLabRequestHandler)
+    httpd = ThreadingHTTPServer(server_address, SSIMLabRequestHandler)
     print(f"==================================================")
     print(f"🔬 SSIM LAB Server running at: http://localhost:{port}")
     print(f"   Architecture: Track A Unified Scientific Studio")

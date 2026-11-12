@@ -105,6 +105,10 @@ def array_to_base64_image(arr: np.ndarray, colormap: str = "jet", ref_bg: Option
         uint8_img = (heat_rgb * 255).astype(np.uint8)
 
     pil_img = Image.fromarray(uint8_img)
+    if max(pil_img.size) > 640:
+        scale = 640.0 / max(pil_img.size)
+        new_size = (int(pil_img.width * scale), int(pil_img.height * scale))
+        pil_img = pil_img.resize(new_size, Image.Resampling.BILINEAR)
     buffer = io.BytesIO()
     pil_img.save(buffer, format="PNG")
     b64_str = base64.b64encode(buffer.getvalue()).decode("utf-8")
