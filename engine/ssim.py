@@ -217,3 +217,26 @@ class MS_SSIM(nn.Module):
 
     def forward(self, img1: torch.Tensor, img2: torch.Tensor) -> torch.Tensor:
         return ms_ssim(img1, img2, window_size=self.window_size, data_range=self.data_range, size_average=self.size_average)
+
+class SSIMLoss(nn.Module):
+    """PyTorch loss function computing 1.0 - SSIM for gradient-based optimization."""
+    def __init__(
+        self,
+        window_size: int = 11,
+        data_range: Optional[float] = None,
+        size_average: bool = True,
+        channel: int = 1,
+        sigma: float = 1.5,
+    ):
+        super(SSIMLoss, self).__init__()
+        self.ssim_module = SSIM(
+            window_size=window_size,
+            data_range=data_range,
+            size_average=size_average,
+            channel=channel,
+            sigma=sigma,
+        )
+
+    def forward(self, img1: torch.Tensor, img2: torch.Tensor) -> torch.Tensor:
+        return 1.0 - self.ssim_module(img1, img2)
+
